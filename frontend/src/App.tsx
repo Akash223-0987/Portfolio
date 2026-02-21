@@ -1,42 +1,44 @@
 import Home from './pages/Home';
 import { motion } from 'framer-motion';
-import Galaxy from './components/Galaxy';
+import { SparklesCore } from './components/ui/sparkles';
 
 function App() {
   return (
-    <div className="bg-black min-h-screen text-neutral-200 font-sans antialiased selection:bg-indigo-500/30 selection:text-indigo-200 relative overflow-hidden">
+    <div className="bg-black min-h-screen text-neutral-200 font-sans antialiased selection:bg-emerald-500/30 selection:text-emerald-200 relative overflow-hidden">
       {/* Dynamic Background Elements */}
       <div className="fixed inset-0 pointer-events-none z-0 bg-black">
-        {/* Galaxy Background */}
-        <div className="absolute inset-0 opacity-60">
-          {/* <Galaxy 
-            mouseInteraction={false} 
-            transparent={true} 
-            starSpeed={0.011}
-            density={0.9}
-            hueShift={0} 
-            glowIntensity={0.3}
-            twinkleIntensity={0.2}
-          /> */}
+
+        {/* Aceternity Sparkles Background */}
+        <div className="absolute inset-0 z-0">
+          <SparklesCore
+            id="tsparticlesfullpage"
+            background="transparent"
+            minSize={0.6}
+            maxSize={1.4}
+            particleDensity={100}
+            className="w-full h-full"
+            particleColor="#10b981"
+            speed={1}
+          />
         </div>
 
-        {/* Background dark gradient */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-transparent via-black/50 to-black z-10" />
+        {/* Background dark gradient overlay to ensure text readability */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_transparent_10%,_#000000_100%)] z-10" />
         
         {/* Subtle grid pattern fading at the bottom */}
-        <div className="absolute inset-0 z-10 bg-[linear-gradient(to_right,#ffffff02_1px,transparent_1px),linear-gradient(to_bottom,#ffffff02_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_0%,#000_70%,transparent_100%)]" />
+        <div className="absolute inset-0 z-10 bg-[linear-gradient(to_right,#ffffff02_1px,transparent_1px),linear-gradient(to_bottom,#ffffff02_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_0%,#000_40%,transparent_100%)] mix-blend-screen opacity-50" />
 
         {/* Subtle animated Glowing Orbs to mix with Galaxy */}
         <motion.div
-           animate={{ x: [0, 20, 0], y: [0, 15, 0] }}
-           transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
-           className="absolute top-[-10%] left-[-10%] w-[30vw] h-[30vw] rounded-full bg-indigo-900/5 blur-[80px] z-10 will-change-transform"
+           animate={{ x: [0, 30, 0], y: [0, 20, 0], scale: [1, 1.1, 1] }}
+           transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+           className="absolute top-[-15%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-[radial-gradient(circle_at_center,rgba(6,78,59,0.2)_0%,transparent_60%)] z-10 will-change-transform mix-blend-screen"
         />
         
         <motion.div
-           animate={{ x: [0, -20, 0], y: [0, -15, 0] }}
-           transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
-           className="absolute bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-purple-900/5 blur-[80px] z-10 will-change-transform"
+           animate={{ x: [0, -30, 0], y: [0, -20, 0], scale: [1, 1.2, 1] }}
+           transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
+           className="absolute bottom-[-15%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-[radial-gradient(circle_at_center,rgba(19,78,74,0.15)_0%,transparent_60%)] z-10 will-change-transform mix-blend-screen"
         />
       </div>
 

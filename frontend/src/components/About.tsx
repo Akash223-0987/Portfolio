@@ -3,17 +3,17 @@ import { Database, Code2, Cpu, Layout } from 'lucide-react';
 
 const focusAreas = [
   {
-    icon: <Layout className="text-indigo-400" size={24} />,
+    icon: <Layout className="text-emerald-400" size={24} />,
     title: 'Full-Stack Development',
     desc: 'Crafting responsive, high-performance web applications from end to end using modern React, Node.js, and TypeScript.'
   },
   {
-    icon: <Cpu className="text-purple-400" size={24} />,
+    icon: <Cpu className="text-green-400" size={24} />,
     title: 'AI-Integrated Systems',
     desc: 'Connecting AI models (NLP, Computer Vision) into functional web applications and automated pipelines.'
   },
   {
-    icon: <Database className="text-blue-400" size={24} />,
+    icon: <Database className="text-emerald-400" size={24} />,
     title: 'Data Analysis & Dashboards',
     desc: 'Extracting actionable insights from messy data and building interactive visualization dashboards.'
   },
@@ -31,23 +31,23 @@ export default function About() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: false, margin: "-100px" }}
           transition={{ duration: 0.6 }}
           className="mb-16"
         >
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">About Me</h2>
-          <div className="w-20 h-1 bg-indigo-500 rounded-full" />
+          <div className="w-20 h-1 bg-emerald-500 rounded-full" />
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: false, margin: "-100px" }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <h3 className="text-2xl font-semibold text-neutral-200 mb-6">Professional Summary</h3>
-            <div className="space-y-6 text-neutral-400 text-lg leading-relaxed">
+            <div className="space-y-6 text-neutral-200 text-lg leading-relaxed">
               <p>
                 I am a passionate software engineer with a strong foundation in both software development and data science. My expertise spans building scalable backend services, crafting intuitive frontend interfaces, and performing deep statistical analyses.
               </p>
@@ -63,7 +63,7 @@ export default function About() {
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: false, margin: "-100px" }}
             transition={{ duration: 0.6, delay: 0.4 }}
             className="grid sm:grid-cols-2 gap-6"
           >
@@ -76,7 +76,7 @@ export default function About() {
                   {area.icon}
                 </div>
                 <h4 className="text-lg font-medium text-neutral-200 mb-2">{area.title}</h4>
-                <p className="text-sm text-neutral-400 leading-relaxed">{area.desc}</p>
+                <p className="text-sm text-neutral-200 leading-relaxed">{area.desc}</p>
               </div>
             ))}
           </motion.div>

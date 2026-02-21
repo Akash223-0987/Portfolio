@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X, Send, Bot, User } from 'lucide-react';
+import { X, Send, Bot, User, Sparkles } from 'lucide-react';
 import { cn } from '../utils';
 
 interface Message {
@@ -15,137 +15,164 @@ export default function ChatWidget() {
     {
       id: 'welcome',
       type: 'bot',
-      text: "Hi! I'm the AI assistant for D AKASH DORA. Feel free to ask me anything about his projects, skills, or experience.",
+      text: "Hi! I'm Akash's AI assistant. Ask me anything about his projects, skills, or experience.",
     }
   ]);
   const [inputValue, setInputValue] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  useEffect(() => {
+    const handler = () => setIsOpen(true);
+    window.addEventListener('open-chat', handler);
+    return () => window.removeEventListener('open-chat', handler);
+  }, []);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, isOpen]);
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isOpen, isTyping]);
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim()) return;
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      type: 'user',
-      text: inputValue,
-    };
-
-    setMessages(prev => [...prev, userMessage]);
+    setMessages(prev => [...prev, { id: Date.now().toString(), type: 'user', text: inputValue }]);
     setInputValue('');
+    setIsTyping(true);
 
-    // Mock AI response delay
     setTimeout(() => {
-      const botMessage: Message = {
+      setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         type: 'bot',
-        text: "Thanks for asking! As an AI placeholder, I cannot dynamically respond right now. But D AKASH is highly skilled in React, Vite, Tailwind CSS, Python, and more!",
-      };
-      setMessages(prev => [...prev, botMessage]);
-    }, 1000);
+        text: "Thanks for asking! D AKASH is skilled in React, TypeScript, Python, and more. Feel free to explore his projects above!",
+      }]);
+      setIsTyping(false);
+    }, 1400);
   };
 
   return (
     <>
+      {/* Trigger button */}
       <AnimatePresence>
         {!isOpen && (
           <motion.button
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8, y: 20 }}
-            transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.94 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 22 }}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full flex items-center justify-center shadow-2xl shadow-indigo-600/30 transition-colors"
+            className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center shadow-[0_4px_24px_rgba(79,70,229,0.5)] transition-colors group"
           >
-            <MessageSquare size={24} />
+            <Sparkles size={22} className="group-hover:rotate-12 transition-transform duration-300" />
           </motion.button>
         )}
       </AnimatePresence>
 
+      {/* Chat Window */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 40, scale: 0.95 }}
+            initial={{ opacity: 0, y: 20, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            className="fixed bottom-6 right-6 z-50 w-[350px] sm:w-[400px] h-[500px] bg-neutral-900 border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+            exit={{ opacity: 0, y: 16, scale: 0.97 }}
+            transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+            className="fixed bottom-6 right-6 z-50 w-[360px] sm:w-[400px] h-[540px] bg-neutral-950 border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
           >
             {/* Header */}
-            <div className="bg-neutral-950 px-4 py-4 flex items-center justify-between border-b border-white/10">
+            <div className="px-5 py-4 flex items-center justify-between border-b border-white/10 bg-neutral-900/60">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-indigo-600/20 flex items-center justify-center">
-                  <Bot size={18} className="text-indigo-400" />
+                <div className="w-9 h-9 rounded-xl bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center">
+                  <Bot size={18} className="text-emerald-400" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-white">Ask AI Assistant</h3>
-                  <span className="text-xs text-green-400 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+                  <p className="text-sm font-semibold text-white leading-none">Ask AI</p>
+                  <p className="text-xs text-neutral-200 mt-0.5 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full inline-block animate-pulse" />
                     Online
-                  </span>
+                  </p>
                 </div>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-neutral-400 hover:text-white transition-colors"
+                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 text-neutral-200 hover:text-white flex items-center justify-center transition-all"
               >
-                <X size={20} />
+                <X size={16} />
               </button>
             </div>
 
-            {/* Chat Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-neutral-900/50">
-              {messages.map((msg) => (
-                <div
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {messages.map((msg, idx) => (
+                <motion.div
                   key={msg.id}
-                  className={cn(
-                    "flex gap-3 max-w-[85%]",
-                    msg.type === 'user' ? "ml-auto flex-row-reverse" : ""
-                  )}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.25, delay: idx === messages.length - 1 ? 0.05 : 0 }}
+                  className={cn('flex gap-2.5', msg.type === 'user' ? 'justify-end' : 'justify-start')}
                 >
+                  {msg.type === 'bot' && (
+                    <div className="w-7 h-7 rounded-full bg-emerald-600/15 border border-emerald-500/20 flex-shrink-0 flex items-center justify-center mt-auto">
+                      <Bot size={13} className="text-emerald-400" />
+                    </div>
+                  )}
                   <div className={cn(
-                    "w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center mt-1",
-                    msg.type === 'user' ? "bg-white/10" : "bg-indigo-600/20"
-                  )}>
-                    {msg.type === 'user' ? <User size={12} className="text-neutral-300" /> : <Bot size={12} className="text-indigo-400" />}
-                  </div>
-                  <div className={cn(
-                    "px-4 py-2.5 rounded-2xl text-sm leading-relaxed text-white",
-                    msg.type === 'user' 
-                      ? "bg-indigo-600 rounded-tr-sm" 
-                      : "bg-neutral-800 border border-white/5 rounded-tl-sm"
+                    'max-w-[78%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed',
+                    msg.type === 'user'
+                      ? 'bg-emerald-600 text-white rounded-br-sm'
+                      : 'bg-neutral-800/80 text-neutral-200 border border-white/5 rounded-bl-sm'
                   )}>
                     {msg.text}
                   </div>
-                </div>
+                  {msg.type === 'user' && (
+                    <div className="w-7 h-7 rounded-full bg-white/10 flex-shrink-0 flex items-center justify-center mt-auto">
+                      <User size={13} className="text-neutral-300" />
+                    </div>
+                  )}
+                </motion.div>
               ))}
+
+              {isTyping && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex gap-2.5 justify-start"
+                >
+                  <div className="w-7 h-7 rounded-full bg-emerald-600/15 border border-emerald-500/20 flex-shrink-0 flex items-center justify-center mt-auto">
+                    <Bot size={13} className="text-emerald-400" />
+                  </div>
+                  <div className="px-4 py-3 bg-neutral-800/80 border border-white/5 rounded-2xl rounded-bl-sm flex items-center gap-1.5">
+                    {[0, 0.18, 0.36].map((delay, i) => (
+                      <motion.div
+                        key={i}
+                        animate={{ y: [0, -5, 0] }}
+                        transition={{ duration: 0.55, repeat: Infinity, delay }}
+                        className="w-1.5 h-1.5 rounded-full bg-neutral-400"
+                      />
+                    ))}
+                  </div>
+                </motion.div>
+              )}
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input Area */}
-            <div className="p-4 bg-neutral-950 border-t border-white/10">
-              <form onSubmit={handleSend} className="relative flex items-center">
+            {/* Input */}
+            <div className="p-4 border-t border-white/10 bg-neutral-900/40">
+              <form onSubmit={handleSend} className="relative flex items-center gap-2">
                 <input
                   type="text"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Ask me something..."
-                  className="w-full bg-neutral-900 border border-white/10 rounded-full pl-4 pr-12 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/50 transition-all placeholder-neutral-500"
+                  placeholder="Ask me anything..."
+                  className="flex-1 bg-neutral-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-emerald-500/50 transition-colors"
                 />
                 <button
                   type="submit"
                   disabled={!inputValue.trim()}
-                  className="absolute right-2 w-8 h-8 rounded-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-neutral-800 disabled:text-neutral-500 flex items-center justify-center text-white transition-colors"
+                  className="w-9 h-9 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:bg-neutral-800 disabled:text-neutral-500 flex items-center justify-center text-white transition-all flex-shrink-0"
                 >
-                  <Send size={14} className="ml-0.5" />
+                  <Send size={15} className="ml-0.5" />
                 </button>
               </form>
             </div>

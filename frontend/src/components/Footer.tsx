@@ -8,7 +8,7 @@ export default function Footer() {
           &copy; {currentYear} D AKASH DORA. All rights reserved.
         </p>
         <p className="text-neutral-600 text-xs mt-2">
-          Designed & Built with React, TypeScript, and TailwindCSS 4
+          Designed & Built with React, TypeScript
         </p>
       </div>
     </footer>
