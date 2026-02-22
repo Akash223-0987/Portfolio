@@ -1,7 +1,5 @@
 import { motion } from 'framer-motion';
-import { Download, ArrowRight, Github, Linkedin, Mail } from 'lucide-react';
-
-const openChat = () => window.dispatchEvent(new CustomEvent('open-chat'));
+import { Download, ArrowRight, Github, Linkedin, Mail, Instagram } from 'lucide-react';
 
 export default function Hero() {
   return (
@@ -74,28 +72,6 @@ export default function Hero() {
                 <Download size={18} />
                 Download Resume
               </a>
-
-              {/* ── AI Chat CTA ── */}
-              <motion.button
-                onClick={openChat}
-                animate={{ boxShadow: ['0 0 12px rgba(16,185,129,0.2)', '0 0 28px rgba(16,185,129,0.5)', '0 0 12px rgba(16,185,129,0.2)'] }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-                className="relative flex items-center gap-3 px-6 py-3 rounded-lg font-medium text-white overflow-hidden bg-gradient-to-r from-emerald-900/80 to-teal-900/80 hover:from-emerald-800 hover:to-teal-800 transition-all duration-300 group border border-emerald-500/30 backdrop-blur-sm flex-shrink-0"
-              >
-                {/* sweep shimmer */}
-                <motion.div
-                  className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent)] -translate-x-full group-hover:translate-x-full transition-transform duration-700"
-                />
-                
-                {/* Tiny Neural AI Logo */}
-                <div className="relative w-5 h-5 flex items-center justify-center">
-                  <div className="absolute inset-0 rounded-full border border-emerald-500/20 border-t-emerald-400 animate-spin" style={{ animationDuration: '3s' }} />
-                  <div className="absolute inset-[2px] rounded-full border border-teal-500/20 border-b-teal-400 animate-spin" style={{ animationDuration: '4s', animationDirection: 'reverse' }} />
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,1)] animate-pulse" />
-                </div>
-
-                <span className="relative z-10 text-emerald-50 shadow-sm font-semibold tracking-wide">Ask AI</span>
-              </motion.button>
             </div>
 
             <motion.div
@@ -123,69 +99,38 @@ export default function Hero() {
               >
                 <Mail size={22} className="text-neutral-200 group-hover:text-[#f08a85] transition-colors" />
               </a>
+              <a 
+                href="https://www.instagram.com/__.akashdora.__?igsh=aW5wejZ5MmI3amh5" target="_blank" rel="noreferrer"
+                className="group flex items-center justify-center w-11 h-11 rounded-xl bg-neutral-900/80 border border-white/10 hover:border-[#E1306C]/60 hover:bg-gradient-to-tr hover:from-[#f09433]/20 hover:via-[#e6683c]/20 hover:to-[#bc1888]/20 transition-all duration-300 hover:shadow-[0_0_16px_rgba(225,48,108,0.35)]"
+              >
+                <Instagram size={22} className="text-neutral-200 group-hover:text-[#E1306C] transition-colors" />
+              </a>
             </motion.div>
             </div>
           </motion.div>
 
           {/* Right Column: Profile Card */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, rotateY: 15 }}
-            whileInView={{ opacity: 1, scale: 1, rotateY: 0 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
-            className="flex justify-center items-center relative perspective-[1000px] mt-8 lg:mt-0"
+            className="flex justify-center items-center relative mt-16 lg:mt-0 lg:ml-8"
           >
-            {/* Glowing Backdrop */}
-            <div className="absolute inset-0 bg-emerald-500/20 blur-[100px] rounded-full w-3/4 h-3/4 m-auto pointer-events-none" />
-            
-            {/* Main Card */}
-            <div className="relative w-80 h-[420px] rounded-2xl p-[2px] bg-gradient-to-b from-emerald-400 via-teal-900 to-transparent shadow-[0_0_40px_rgba(16,185,129,0.15)] group transition-transform duration-500 hover:scale-[1.02]">
+            <div className="relative w-64 h-[320px] sm:w-72 sm:h-[380px] md:w-80 md:h-[420px] group">
+              {/* Decorative offset border */}
+              <div className="absolute inset-0 border-2 border-emerald-500/30 rounded-3xl translate-x-4 translate-y-4 sm:translate-x-6 sm:translate-y-6 transition-all duration-500 group-hover:translate-x-2 group-hover:translate-y-2 group-hover:border-emerald-400/60 shadow-[0_0_30px_rgba(52,211,153,0)] group-hover:shadow-[0_0_30px_rgba(52,211,153,0.1)]" />
               
-              <div className="relative w-full h-full bg-neutral-950 rounded-2xl overflow-hidden flex flex-col items-center justify-center">
-                
-                {/* Image or Fallback */}
-                {/* 
-                  Drop a file named profile.jpg or profile.png into the 'public' folder. 
-                  Until then, it shows the stunning neon typography fallback! 
-                */}
+              {/* Main image container */}
+              <div className="absolute inset-0 rounded-3xl overflow-hidden bg-neutral-900 border border-white/5 shadow-2xl z-10 transition-transform duration-500 group-hover:-translate-x-2 group-hover:-translate-y-2">
                 <img 
                   src="/profile.png" 
                   alt="D Akash Dora" 
-                  className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500 mix-blend-luminosity hover:mix-blend-normal z-0" 
+                  className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105 filter grayscale opacity-90 group-hover:grayscale-0 group-hover:opacity-100" 
                   onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none';
-                    (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                    (e.target as HTMLImageElement).src = 'https://ui-avatars.com/api/?name=AD&background=171717&color=34d399&size=512';
                   }} 
                 />
-                
-                {/* Fallback Initials (Hidden by default, shows if img fails) */}
-                <div className="hidden absolute inset-0 z-0 flex items-center justify-center bg-gradient-to-br from-neutral-900 to-black">
-                  <div className="text-emerald-500/30 font-black text-8xl tracking-tighter group-hover:scale-110 group-hover:text-emerald-500/50 transition-all duration-700">
-                    AD
-                  </div>
-                </div>
-
-                {/* Cyberpunk Accents */}
-                <div className="absolute top-4 right-4 z-10 bg-emerald-500/10 text-emerald-400 text-[10px] font-mono tracking-widest px-2 py-1 rounded backdrop-blur-sm border border-emerald-500/20">
-                  SYS.ONLINE
-                </div>
-
-                {/* Floating Info Plate */}
-                <div className="absolute bottom-4 left-4 right-4 z-10 bg-neutral-900/60 backdrop-blur-md p-4 rounded-xl border border-white/10 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                  <div className="flex justify-between items-center mb-1">
-                    <p className="text-base font-bold text-white tracking-wide">D Akash Dora</p>
-                    <span className="relative flex h-2.5 w-2.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                    </span>
-                  </div>
-                  <p className="text-xs text-emerald-400 font-mono">Available for Work</p>
-                </div>
-
-                {/* Glowing Corner Borders for Hacker aesthetic */}
-                <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-emerald-500/50 rounded-tl-xl m-3 transition-all duration-500 group-hover:border-emerald-400 group-hover:w-12 group-hover:h-12 z-10 pointer-events-none" />
-                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-emerald-500/50 rounded-br-xl m-3 transition-all duration-500 group-hover:border-emerald-400 group-hover:w-12 group-hover:h-12 z-10 pointer-events-none" />
-                
               </div>
             </div>
           </motion.div>

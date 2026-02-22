@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Menu, X, Home, User, Lightbulb, Code, GraduationCap, Mail } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../utils';
+import AskAIButton from './AskAIButton';
+import AskAIModal from './AskAIModal';
 
 const navLinks = [
   { name: 'Home', href: '#home', icon: <Home size={18} /> },
@@ -15,6 +17,12 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
+  
+  const [isAIModalOpen, setIsAIModalOpen] = useState(false);
+
+  const handleOpenAI = () => {
+    setIsAIModalOpen(true);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -65,7 +73,7 @@ export default function Navbar() {
         )}
         style={{ transform: 'translateZ(0)', willChange: 'transform' }}
       >
-        <div className="flex justify-between items-center h-14 px-6 md:px-8 max-w-5xl relative gap-4 md:gap-8">
+        <div className="flex justify-between items-center h-14 px-6 md:px-8 max-w-[1200px] relative gap-4 md:gap-8">
 
           {/* Logo */}
           <div
@@ -112,6 +120,8 @@ export default function Navbar() {
                 );
               })}
             </div>
+
+            <AskAIButton onClick={handleOpenAI} />
 
             {/* Standalone Contact CTA — contextual hide when in contact section */}
             <AnimatePresence>
@@ -183,11 +193,19 @@ export default function Navbar() {
                     </div>
                   </a>
                 ))}
+                <div className="pt-2 px-2 pb-1">
+                  <AskAIButton onClick={handleOpenAI} isMobile />
+                </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </nav>
+
+      <AskAIModal 
+        isOpen={isAIModalOpen} 
+        onClose={() => setIsAIModalOpen(false)} 
+      />
     </div>
   );
 }

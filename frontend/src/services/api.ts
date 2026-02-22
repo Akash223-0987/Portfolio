@@ -145,3 +145,18 @@ export async function deleteProject(id: string): Promise<{ message: string }> {
   return res.json();
 }
 
+// ─── AI Chat ──────────────────────────────────────────────────────────────────
+export async function sendChatMessage(message: string): Promise<{ response: string }> {
+  const res = await fetch(`${API_BASE}/ai/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err?.detail ?? 'Failed to send message');
+  }
+
+  return res.json();
+}

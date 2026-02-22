@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Mail, MapPin, Linkedin, Github, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { Send, Mail, MapPin, Linkedin, Github, CheckCircle, AlertCircle, Loader2, Instagram } from 'lucide-react';
 import { useState } from 'react';
 import { submitContact } from '../services/api';
 
@@ -67,7 +67,7 @@ export default function Contact() {
                 <div className="w-12 h-12 rounded-full bg-neutral-900 border border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <MapPin size={20} className="text-emerald-400 group-hover:text-emerald-300" />
                 </div>
-                <span className="text-lg">Vijayawada, Andhra Pradesh</span>
+                <span className="text-lg">Berhampur, Odisha</span>
               </div>
             </div>
 
@@ -83,6 +83,12 @@ export default function Contact() {
                 className="group w-12 h-12 rounded-xl bg-neutral-900 border border-white/10 flex items-center justify-center transition-all duration-300 hover:border-teal-400/60 hover:bg-gradient-to-br hover:from-teal-600/20 hover:to-cyan-600/20 hover:shadow-[0_0_20px_rgba(167,139,250,0.5)]"
               >
                 <Github size={20} className="text-neutral-200 group-hover:text-teal-300 transition-colors duration-300" />
+              </a>
+              <a
+                href="https://www.instagram.com/__.akashdora.__?igsh=aW5wejZ5MmI3amh5" target="_blank" rel="noreferrer"
+                className="group w-12 h-12 rounded-xl bg-neutral-900 border border-white/10 flex items-center justify-center transition-all duration-300 hover:border-[#E1306C]/60 hover:bg-gradient-to-tr hover:from-[#f09433]/20 hover:via-[#e6683c]/20 hover:to-[#bc1888]/20 hover:shadow-[0_0_20px_rgba(225,48,108,0.4)]"
+              >
+                <Instagram size={20} className="text-neutral-200 group-hover:text-[#E1306C] transition-colors duration-300" />
               </a>
             </div>
           </motion.div>

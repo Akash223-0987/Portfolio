@@ -5,7 +5,6 @@ import Skills from '../components/Skills';
 import Projects from '../components/Projects';
 import Education from '../components/Education';
 import Contact from '../components/Contact';
-import ChatWidget from '../components/ChatWidget';
 import Footer from '../components/Footer';
 
 export default function Home() {
@@ -22,7 +21,6 @@ export default function Home() {
           <Contact />
         </main>
         <Footer />
-        <ChatWidget />
       </div>
     </>
   );

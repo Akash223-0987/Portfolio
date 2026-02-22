@@ -45,19 +45,19 @@ export const projects: Project[] = [
 export const skillCategories: SkillCategory[] = [
   {
     title: 'Programming Languages',
-    skills: ['Python', 'C', 'C++', 'Java', 'R', 'TypeScript'],
+    skills: ['Python', 'Java', 'C', 'C++', 'JavaScript', 'TypeScript', 'R'],
   },
   {
     title: 'Frontend Technologies',
-    skills: ['HTML', 'CSS', 'JavaScript', 'React.js', 'TailwindCSS', 'Bootstrap'],
+    skills: ['HTML', 'CSS', 'TailwindCSS', 'Bootstrap', 'React.js'],
   },
   {
     title: 'Backend Technologies',
-    skills: ['Node.js', 'Express.js', 'REST APIs'],
+    skills: ['Node.js', 'Express.js', 'MySQL', 'MongoDB', 'PostgreSQL', 'Firebase', 'Supabase', 'Google Cloud'],
   },
   {
-    title: 'Databases',
-    skills: ['MySQL', 'MongoDB', 'Firebase', 'Supabase'],
+    title: 'Tools',
+    skills: ['Git', 'GitHub', 'Postman', 'MATLAB', 'PyCharm', 'Jupyter Notebook'],
   },
   {
     title: 'Data Analytics & ML',

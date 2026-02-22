@@ -1,189 +1,75 @@
-import { useRef, useState, useEffect } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { ExternalLink, Github, ArrowUpRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Github, ArrowUpRight } from 'lucide-react';
 import { projects as staticProjects } from '../data/portfolioData';
 import { fetchProjects } from '../services/api';
 import type { Project } from '../types';
 
-// ─── 3D Tilt Card ──────────────────────────────────────────────────────────────
 function ProjectCard({ project, index }: { project: Project; index: number }) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [hovered, setHovered] = useState(false);
-
-  // Mouse position relative to card
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  // Smooth spring for tilt
-  const rotX = useSpring(useTransform(mouseY, [-0.5, 0.5], [8, -8]), { stiffness: 200, damping: 25 });
-  const rotY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-10, 10]), { stiffness: 200, damping: 25 });
-
-  // Spotlight position as plain state
-  const [spotPos, setSpotPos] = useState({ x: 50, y: 50 });
-
-  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const nx = (e.clientX - rect.left) / rect.width;
-    const ny = (e.clientY - rect.top) / rect.height;
-    mouseX.set(nx - 0.5);
-    mouseY.set(ny - 0.5);
-    setSpotPos({ x: nx * 100, y: ny * 100 });
-  }
-
-  function handleMouseLeave() {
-    mouseX.set(0);
-    mouseY.set(0);
-    setHovered(false);
-  }
-
-  // Accent colors cycling
-  const accentColors = ['#34d399', '#818cf8', '#f472b6', '#fb923c', '#38bdf8'];
-  const accent = accentColors[index % accentColors.length];
-
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50, scale: 0.95 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: false, margin: '-80px' }}
-      transition={{ duration: 0.6, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-      style={{ perspective: 1000 }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
       className="h-full"
     >
-      <motion.div
-        ref={cardRef}
-        onMouseMove={handleMouseMove}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={handleMouseLeave}
-        style={{ rotateX: rotX, rotateY: rotY, transformStyle: 'preserve-3d' }}
-        className="relative flex flex-col h-full rounded-2xl cursor-default overflow-hidden
-          bg-neutral-900/60 backdrop-blur-md
-          border border-white/8 transition-[border-color,box-shadow] duration-500"
-        whileHover={{ boxShadow: `0 24px 60px -12px ${accent}44` }}
-      >
-        {/* Dynamic cursor spotlight */}
-        {hovered && (
-          <motion.div
-            className="absolute inset-0 pointer-events-none z-0 rounded-2xl"
-            style={{
-              background: `radial-gradient(circle at ${spotPos.x}% ${spotPos.y}%, ${accent}22 0%, transparent 65%)`,
-            }}
-          />
-        )}
+      <div className="flex flex-col h-full rounded-2xl p-7 bg-neutral-900 border border-white/10 hover:border-emerald-500/50 transition-colors group">
+        
+        {/* Header - Title */}
+        <div className="mb-4">
+          <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">
+            {project.title}
+          </h3>
+          {project.ongoing && (
+            <span className="inline-block px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-xs font-medium mb-2">
+              Ongoing
+            </span>
+          )}
+        </div>
 
-        {/* Top colored accent bar */}
-        <div
-          className="absolute top-0 left-0 right-0 h-[2px] z-10"
-          style={{ background: `linear-gradient(to right, transparent, ${accent}, transparent)` }}
-        />
+        {/* Description */}
+        <p className="text-neutral-400 text-base leading-relaxed mb-6 flex-grow">
+          {project.description}
+        </p>
 
-        {/* Card body - elevated for 3D effect and clickability */}
-        <div 
-          className="flex flex-col flex-1 p-7 relative z-10"
-          style={{ transform: 'translateZ(30px)' }}
-        >
-
-          {/* Header row */}
-          <div className="flex items-start justify-between mb-6">
-            {/* Glowing project number */}
-            <div
-              className="w-11 h-11 rounded-xl flex items-center justify-center text-sm font-black border"
-              style={{
-                color: accent,
-                borderColor: accent + '44',
-                backgroundColor: accent + '11',
-                boxShadow: `0 0 18px ${accent}33`,
-              }}
-            >
-              {String(index + 1).padStart(2, '0')}
-            </div>
-
-            {/* Links */}
-            <div className="flex items-center gap-2">
-              {project.liveUrl && (
-                <motion.a
-                  href={project.liveUrl !== '' ? project.liveUrl : undefined}
-                  target="_blank"
-                  rel="noreferrer"
-                  whileHover={{ scale: 1.1, rotate: -8 }}
-                  className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-neutral-400 hover:text-white hover:border-white/30 transition-colors pointer-events-auto"
-                >
-                  <ExternalLink size={15} />
-                </motion.a>
+        {/* Tech Stack (Simple text elements) */}
+        <div className="flex flex-wrap gap-x-4 gap-y-2 mb-8">
+          {project.techStack.map((tech: string, i: number) => (
+            <span key={i} className="text-sm font-medium text-neutral-300 flex items-center">
+              {tech}
+              {i < project.techStack.length - 1 && (
+                <span className="ml-4 text-neutral-700">•</span>
               )}
-              {project.githubUrl && (
-                <motion.a
-                  href={project.githubUrl !== '' ? project.githubUrl : undefined}
-                  target="_blank"
-                  rel="noreferrer"
-                  whileHover={{ scale: 1.1, rotate: 8 }}
-                  className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-neutral-400 hover:text-white hover:border-white/30 transition-colors pointer-events-auto"
-                >
-                  <Github size={15} />
-                </motion.a>
-              )}
-            </div>
-          </div>
+            </span>
+          ))}
+        </div>
 
-          {/* Title and Ongoing Badge */}
-          <div className="flex items-center gap-3 mb-3">
-            <h3 className="text-xl font-bold text-white leading-tight group-hover:text-white transition-colors line-clamp-2">
-              {project.title}
-            </h3>
-            {project.ongoing && (
-              <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-[10px] font-bold text-emerald-400 uppercase tracking-wider whitespace-nowrap">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Ongoing
-              </span>
-            )}
-          </div>
-
-          {/* Description */}
-          <p className="text-neutral-400 text-sm leading-relaxed flex-grow mb-6">
-            {project.description}
-          </p>
-
-          {/* Tech pills */}
-          <div className="flex flex-wrap gap-2 pt-4 border-t border-white/6">
-            {project.techStack.map((tech: string, i: number) => (
-              <motion.span
-                key={i}
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: false }}
-                transition={{ delay: index * 0.1 + i * 0.04 + 0.3 }}
-                className="px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide rounded-lg border"
-                style={{
-                  color: accent,
-                  borderColor: accent + '30',
-                  backgroundColor: accent + '0d',
-                }}
-              >
-                {tech}
-              </motion.span>
-            ))}
-          </div>
-
-          {/* Always-visible CTA */}
-          {(project.liveUrl || project.githubUrl) && (
+        {/* Actions */}
+        <div className="mt-auto flex flex-col sm:flex-row gap-3">
+          {project.githubUrl && (
             <a
-              href={project.liveUrl || project.githubUrl || undefined}
+              href={project.githubUrl !== '' ? project.githubUrl : undefined}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-1.5 mt-5 text-xs font-semibold w-fit px-3 py-1.5 rounded-lg border transition-all duration-200 hover:-translate-y-0.5 pointer-events-auto"
-              style={{
-                color: accent,
-                borderColor: accent + '44',
-                backgroundColor: accent + '0d',
-                transform: 'translateZ(20px)',
-              }}
+              className="flex items-center justify-center gap-2 flex-1 py-3 rounded-xl border border-white/10 bg-white/5 text-white hover:bg-white/10 transition-colors font-medium text-sm"
+              aria-label="View Source Code"
             >
-              {project.liveUrl ? 'Live Demo' : 'View Project'} <ArrowUpRight size={13} />
+              <Github size={18} /> Source Code
             </a>
           )}
-
+          {project.liveUrl && (
+            <a
+              href={project.liveUrl !== '' ? project.liveUrl : undefined}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center justify-center gap-2 flex-1 py-3 rounded-xl bg-white text-black font-semibold hover:bg-neutral-200 transition-colors text-sm"
+            >
+              Live Demo <ArrowUpRight size={18} />
+            </a>
+          )}
         </div>
-      </motion.div>
+      </div>
     </motion.div>
   );
 }
@@ -191,25 +77,22 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 // ─── Skeleton Loader ────────────────────────────────────────────────────────
 function SkeletonCard() {
   return (
-    <div className="relative flex flex-col h-full rounded-2xl bg-neutral-900/60 border border-white/8 p-7 animate-pulse">
-      <div className="flex items-start justify-between mb-6">
-        <div className="w-11 h-11 rounded-xl bg-white/5" />
-        <div className="flex gap-2">
-          <div className="w-9 h-9 rounded-xl bg-white/5" />
-          <div className="w-9 h-9 rounded-xl bg-white/5" />
-        </div>
+    <div className="flex flex-col h-full rounded-2xl p-7 bg-neutral-900 border border-white/10 animate-pulse">
+      <div className="flex justify-between mb-4">
+        <div className="h-8 w-2/3 bg-white/5 rounded" />
+        <div className="h-6 w-6 bg-white/5 rounded" />
       </div>
-      <div className="h-6 w-2/3 bg-white/5 rounded-lg mb-3" />
-      <div className="space-y-2 flex-grow mb-6">
-        <div className="h-4 bg-white/5 rounded" />
+      <div className="space-y-3 mb-6 flex-grow">
+        <div className="h-4 bg-white/5 rounded w-full" />
         <div className="h-4 bg-white/5 rounded w-5/6" />
         <div className="h-4 bg-white/5 rounded w-4/6" />
       </div>
-      <div className="flex gap-2 pt-4 border-t border-white/6">
-        <div className="h-6 w-16 bg-white/5 rounded-lg" />
-        <div className="h-6 w-20 bg-white/5 rounded-lg" />
-        <div className="h-6 w-14 bg-white/5 rounded-lg" />
+      <div className="flex gap-4 mb-8">
+        <div className="h-5 w-16 bg-white/5 rounded" />
+        <div className="h-5 w-20 bg-white/5 rounded" />
+        <div className="h-5 w-16 bg-white/5 rounded" />
       </div>
+      <div className="h-12 w-full bg-white/5 rounded-xl mt-auto" />
     </div>
   );
 }
