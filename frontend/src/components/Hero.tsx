@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Download, ArrowRight, Github, Linkedin, Mail, Sparkles } from 'lucide-react';
+import { Download, ArrowRight, Github, Linkedin, Mail } from 'lucide-react';
 
 const openChat = () => window.dispatchEvent(new CustomEvent('open-chat'));
 
@@ -80,14 +80,21 @@ export default function Hero() {
                 onClick={openChat}
                 animate={{ boxShadow: ['0 0 12px rgba(16,185,129,0.2)', '0 0 28px rgba(16,185,129,0.5)', '0 0 12px rgba(16,185,129,0.2)'] }}
                 transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-                className="relative flex items-center gap-2 px-6 py-3 rounded-lg font-medium text-white overflow-hidden bg-gradient-to-r from-teal-600/80 to-emerald-600/80 hover:from-teal-500 hover:to-emerald-500 transition-all duration-300 group border border-emerald-400/30 backdrop-blur-sm flex-shrink-0"
+                className="relative flex items-center gap-3 px-6 py-3 rounded-lg font-medium text-white overflow-hidden bg-gradient-to-r from-emerald-900/80 to-teal-900/80 hover:from-emerald-800 hover:to-teal-800 transition-all duration-300 group border border-emerald-500/30 backdrop-blur-sm flex-shrink-0"
               >
                 {/* sweep shimmer */}
                 <motion.div
-                  className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] -translate-x-full group-hover:translate-x-full transition-transform duration-700"
+                  className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent)] -translate-x-full group-hover:translate-x-full transition-transform duration-700"
                 />
-                <Sparkles size={18} className="relative z-10 text-emerald-200" />
-                <span className="relative z-10 text-white shadow-sm">Ask AI</span>
+                
+                {/* Tiny Neural AI Logo */}
+                <div className="relative w-5 h-5 flex items-center justify-center">
+                  <div className="absolute inset-0 rounded-full border border-emerald-500/20 border-t-emerald-400 animate-spin" style={{ animationDuration: '3s' }} />
+                  <div className="absolute inset-[2px] rounded-full border border-teal-500/20 border-b-teal-400 animate-spin" style={{ animationDuration: '4s', animationDirection: 'reverse' }} />
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,1)] animate-pulse" />
+                </div>
+
+                <span className="relative z-10 text-emerald-50 shadow-sm font-semibold tracking-wide">Ask AI</span>
               </motion.button>
             </div>
 

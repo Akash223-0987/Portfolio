@@ -100,24 +100,24 @@ export default function Navbar() {
             </div>
 
             {/* Standalone Contact CTA */}
-            <a
-              href="#contact"
-              onClick={(e) => scrollToSection(e, '#contact')}
-              className="relative flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold overflow-hidden group
-                bg-gradient-to-r from-emerald-600 to-teal-600 text-white
-                shadow-[0_0_20px_rgba(99,102,241,0.35)] hover:shadow-[0_0_30px_rgba(99,102,241,0.6)]
-                hover:from-emerald-500 hover:to-teal-500 transition-all duration-300
-                border border-emerald-400/30"
-            >
-              {/* sweep shimmer */}
+            <div className="relative p-[1.5px] rounded-full overflow-hidden group">
               <motion.div
-                className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]"
-                animate={{ x: ['-100%', '100%'] }}
+                className="absolute inset-[-1000%] bg-[conic-gradient(from_90deg_at_50%_50%,#00000000_50%,#34d399_100%)]"
+                animate={{ rotate: 360 }}
                 transition={{ duration: 2.5, repeat: Infinity, ease: 'linear' }}
               />
-              <Mail size={15} className="relative z-10" />
-              <span className="relative z-10 tracking-wide">Contact</span>
-            </a>
+              <a
+                href="#contact"
+                onClick={(e) => scrollToSection(e, '#contact')}
+                className="relative flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold
+                  bg-neutral-950 text-white
+                  hover:bg-neutral-900 transition-all duration-300 w-full h-full
+                  z-10 group-hover:shadow-[0_0_20px_rgba(52,211,153,0.4)]"
+              >
+                <Mail size={15} className="text-emerald-400 group-hover:scale-110 transition-transform duration-300" />
+                <span className="tracking-wide">Contact</span>
+              </a>
+            </div>
           </div>
 
           {/* Mobile hamburger */}

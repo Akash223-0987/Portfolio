@@ -2,41 +2,41 @@ import type { Project, SkillCategory, ExperienceItem } from '../types';
 
 export const projects: Project[] = [
   {
-    id: 'retention-analysis',
-    title: 'Retention Analysis Dashboard',
-    description: 'A comprehensive data dashboard analyzing user retention metrics with interactive visualizations.',
-    techStack: ['Python', 'Data Analytics', 'Pandas', 'Visualization'],
-    githubUrl: 'https://github.com',
-  },
-  {
-    id: 'auto-news',
-    title: 'Auto-News Sentiment Aggregator',
-    description: 'An automated pipeline aggregating news and performing sentiment analysis using AI models.',
-    techStack: ['Python', 'FastAPI', 'Sentiment Analysis', 'React'],
+    id: 'kairos',
+    title: 'Kairos',
+    description: 'An intelligent AI chatbot application.',
+    techStack: ['HTML', 'CSS', 'Node.js', 'Express.js', 'REST API'],
     githubUrl: 'https://github.com',
   },
   {
     id: 'gesture-mario',
     title: 'Gesture-Based Mario Game',
     description: 'A computer vision project that allows playing Super Mario using hand gestures.',
-    techStack: ['Python', 'OpenCV', 'AI/ML'],
+    techStack: ['Java', 'JavaFX', 'Swing', 'OpenCV'],
     githubUrl: 'https://github.com',
   },
   {
-    id: 'medicine-tracker',
-    title: 'Medicine Tracker App',
-    description: 'An application designed to help users track their medication schedules and health metrics.',
-    techStack: ['React', 'TypeScript', 'TailwindCSS', 'SQLite'],
+    id: 'nubesvault',
+    title: 'NubesVault',
+    description: 'A cloud storage application allowing users to securely store and manage files, folders, and images.',
+    techStack: ['React', 'Node.js', 'Express.js', 'MongoDB', 'OAuth'],
     githubUrl: 'https://github.com',
-    liveUrl: 'https://demo.com',
   },
   {
-    id: 'ai-portfolio',
-    title: 'AI Portfolio',
-    description: 'A modern developer portfolio powered by an integrated AI chatbot assistant.',
-    techStack: ['React 19', 'TypeScript', 'Vite', 'TailwindCSS 4'],
+    id: 'auto-news',
+    title: 'Press Pulse',
+    description: 'An automated pipeline aggregating news and performing sentiment analysis using AI models.',
+    techStack: ['Python', 'FastAPI', 'Sentiment Analysis'],
     githubUrl: 'https://github.com',
-    liveUrl: 'https://demo.com',
+    ongoing: true,
+  },
+  {
+    id: 'spendora',
+    title: 'Spendora',
+    description: 'Smart expense tracker with budget management, spending pattern analysis, and financial insights through data visualization.',
+    techStack: ['React.js', 'Node.js', 'Express.js', 'PostgreSQL', 'Supabase'],
+    githubUrl: 'https://github.com',
+    ongoing: true,
   },
 ];
 
@@ -59,7 +59,7 @@ export const skillCategories: SkillCategory[] = [
   },
   {
     title: 'Data Analytics & ML',
-    skills: ['Pandas', 'NumPy', 'Scikit-learn', 'Matplotlib', 'Seaborn'],
+    skills: ['Pandas', 'NumPy', 'Scikit-learn', 'Matplotlib', 'Seaborn', 'Power BI'],
   },
 ];
 
