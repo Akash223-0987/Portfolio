@@ -41,18 +41,18 @@ export default function Contact() {
             </p>
 
             <div className="space-y-6">
-              <a href="mailto:contact@example.com" className="flex items-center gap-4 text-neutral-300 hover:text-white group transition-colors">
+              <a href="mailto:akashdora2@gmail.com" className="flex items-center gap-4 text-neutral-300 hover:text-white group transition-colors">
                 <div className="w-12 h-12 rounded-full bg-neutral-900 border border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Mail size={20} className="text-emerald-400 group-hover:text-emerald-300" />
                 </div>
-                <span className="text-lg">contact@example.com</span>
+                <span className="text-lg">akashdora2@gmail.com</span>
               </a>
               
               <div className="flex items-center gap-4 text-neutral-300 group">
                 <div className="w-12 h-12 rounded-full bg-neutral-900 border border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <MapPin size={20} className="text-emerald-400 group-hover:text-emerald-300" />
                 </div>
-                <span className="text-lg">Location Name, Earth</span>
+                <span className="text-lg">Vijayawada, Andhra Pradesh</span>
               </div>
             </div>
 

@@ -118,7 +118,7 @@ export default function Hero() {
                 <Linkedin size={22} className="text-neutral-200 group-hover:text-[#5badee] transition-colors" />
               </a>
               <a 
-                href="mailto:contact@example.com"
+                href="mailto:akashdora2@gmail.com"
                 className="group flex items-center justify-center w-11 h-11 rounded-xl bg-neutral-900/80 border border-white/10 hover:border-[#EA4335]/60 hover:bg-[#EA4335]/12 transition-all duration-300 hover:shadow-[0_0_16px_rgba(234,67,53,0.35)]"
               >
                 <Mail size={22} className="text-neutral-200 group-hover:text-[#f08a85] transition-colors" />

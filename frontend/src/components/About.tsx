@@ -46,16 +46,13 @@ export default function About() {
             viewport={{ once: false, margin: "-100px" }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <h3 className="text-2xl font-semibold text-neutral-200 mb-6">Professional Summary</h3>
+            <h3 className="text-2xl font-semibold text-neutral-200 mb-6">Summary</h3>
             <div className="space-y-6 text-neutral-200 text-lg leading-relaxed">
               <p>
-                I am a passionate software engineer with a strong foundation in both software development and data science. My expertise spans building scalable backend services, crafting intuitive frontend interfaces, and performing deep statistical analyses.
+                I am a Computer Science student specializing in Data Analytics and Full-Stack Engineering, driven by the goal of building intelligent, data-centric applications. My work spans from developing <strong>Kairos</strong>, an AI chatbot, and <strong>Press Pulse</strong>, an automated sentiment analysis pipeline, to architecting secure cloud platforms like <strong>NubesVault</strong>.
               </p>
               <p>
-                I thrive at the intersection of product engineering and data analytics—turning complex problems into seamless, performant digital solutions while leveraging AI and ML methodologies to extract maximum value from data.
-              </p>
-              <p>
-                Currently, I'm focusing on strengthening my full-stack expertise and building AI-integrated tooling that simplifies everyday tasks. When I'm not coding, I am usually exploring emerging technology trends or optimizing my personal workflows.
+                With professional internship experience in both data analysis and backend development, I excel at combining robust engineering with actionable insights. Whether I'm creating immersive computer vision projects like my <strong>gesture-based Mario game</strong> or building scalable financial tools like <strong>Spendora</strong>, I focus on delivering seamless, performant solutions that bridge the gap between complex data and end-user needs.
               </p>
             </div>
           </motion.div>

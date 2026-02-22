@@ -19,8 +19,8 @@ export default function Navbar() {
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
-      
-      const sections = navLinks.map(link => link.name.toLowerCase());
+
+      const sections = [...navLinks.map(link => link.name.toLowerCase()), 'contact'];
       const current = sections.find(section => {
         const element = document.getElementById(section);
         if (element) {
@@ -32,7 +32,8 @@ export default function Navbar() {
       if (current) setActiveSection(current);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    // passive: true prevents the listener from blocking scroll paint
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -43,25 +44,34 @@ export default function Navbar() {
     if (element) {
       window.scrollTo({
         top: element.getBoundingClientRect().top + window.scrollY - 80,
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     }
   };
 
   return (
-    <div className="fixed top-6 left-0 right-0 z-50 flex justify-center w-full pointer-events-none px-4">
+    // GPU-promoted layer so the navbar never triggers main-thread repaints
+    <div
+      className="fixed top-6 left-0 right-0 z-50 flex justify-center w-full pointer-events-none px-4"
+      style={{ transform: 'translateZ(0)', willChange: 'transform' }}
+    >
       <nav
         className={cn(
-          'pointer-events-auto transition-all duration-300 overflow-visible flex flex-col rounded-full border',
+          // Only transition the properties that actually change — avoids layout recalc on "all"
+          'pointer-events-auto transition-[background-color,border-color,box-shadow] duration-300 overflow-visible flex flex-col rounded-full border',
           isScrolled || mobileMenuOpen
             ? 'bg-neutral-950/70 backdrop-blur-xl border-white/10 shadow-2xl'
             : 'bg-white/5 backdrop-blur-md border-white/10'
         )}
+        style={{ transform: 'translateZ(0)', willChange: 'transform' }}
       >
         <div className="flex justify-between items-center h-14 px-6 md:px-8 max-w-5xl relative gap-4 md:gap-8">
-          
+
           {/* Logo */}
-          <div className="flex-shrink-0 flex items-center h-8 cursor-pointer" onClick={(e) => scrollToSection(e as any, '#home')}>
+          <div
+            className="flex-shrink-0 flex items-center h-8 cursor-pointer"
+            onClick={(e) => scrollToSection(e as any, '#home')}
+          >
             <span className="text-xl font-bold tracking-tighter text-white">
               D AKASH DORA
             </span>
@@ -79,18 +89,22 @@ export default function Navbar() {
                     href={link.href}
                     onClick={(e) => scrollToSection(e, link.href)}
                     className={cn(
-                      'relative px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-2 group',
+                      'relative px-5 py-2 rounded-full text-sm font-medium transition-colors duration-200 flex items-center gap-2 group',
                       isActive ? 'text-white' : 'text-neutral-200 hover:text-white'
                     )}
                   >
-                    {isActive && (
-                      <motion.div
-                        layoutId="navbar-active"
-                        className="absolute inset-0 bg-white/10 rounded-full"
-                        transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-                      />
-                    )}
-                    <span className="relative z-10 opacity-100 group-hover:opacity-100 transition-opacity flex items-center mt-[1px]">
+                    {/*
+                      Always rendered — no mount/unmount so no layout jitter.
+                      Animates opacity + scale on the compositor thread only.
+                    */}
+                    <motion.div
+                      className="absolute inset-0 rounded-full bg-white/10"
+                      initial={false}
+                      animate={{ opacity: isActive ? 1 : 0, scale: isActive ? 1 : 0.85 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 35, mass: 0.6 }}
+                      style={{ willChange: 'opacity, transform' }}
+                    />
+                    <span className="relative z-10 flex items-center mt-[1px]">
                       {link.icon}
                     </span>
                     <span className="relative z-10">{link.name}</span>
@@ -99,25 +113,34 @@ export default function Navbar() {
               })}
             </div>
 
-            {/* Standalone Contact CTA */}
-            <div className="relative p-[1.5px] rounded-full overflow-hidden group">
-              <motion.div
-                className="absolute inset-[-1000%] bg-[conic-gradient(from_90deg_at_50%_50%,#00000000_50%,#34d399_100%)]"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: 'linear' }}
-              />
-              <a
-                href="#contact"
-                onClick={(e) => scrollToSection(e, '#contact')}
-                className="relative flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold
-                  bg-neutral-950 text-white
-                  hover:bg-neutral-900 transition-all duration-300 w-full h-full
-                  z-10 group-hover:shadow-[0_0_20px_rgba(52,211,153,0.4)]"
-              >
-                <Mail size={15} className="text-emerald-400 group-hover:scale-110 transition-transform duration-300" />
-                <span className="tracking-wide">Contact</span>
-              </a>
-            </div>
+            {/* Standalone Contact CTA — contextual hide when in contact section */}
+            <AnimatePresence>
+              {activeSection !== 'contact' && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8, width: 0 }}
+                  animate={{ opacity: 1, scale: 1, width: 'auto' }}
+                  exit={{ opacity: 0, scale: 0.8, width: 0 }}
+                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  className="relative p-[1.5px] rounded-full overflow-hidden group ml-2"
+                >
+                  <motion.div
+                    className="absolute inset-[-1000%] bg-[conic-gradient(from_90deg_at_50%_50%,#00000000_50%,#34d399_100%)]"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: 'linear' }}
+                  />
+                  <a
+                    href="#contact"
+                    onClick={(e) => scrollToSection(e, '#contact')}
+                    className="relative flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold
+                      bg-neutral-950 text-white hover:bg-neutral-900 transition-all duration-300
+                      w-full h-full z-10 group-hover:shadow-[0_0_20px_rgba(52,211,153,0.4)] whitespace-nowrap"
+                  >
+                    <Mail size={15} className="text-emerald-400 group-hover:scale-110 transition-transform duration-300" />
+                    <span className="tracking-wide">Contact</span>
+                  </a>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Mobile hamburger */}
