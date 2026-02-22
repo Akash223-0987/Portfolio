@@ -1,10 +1,12 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { ExternalLink, Github, ArrowUpRight } from 'lucide-react';
-import { projects } from '../data/portfolioData';
+import { projects as staticProjects } from '../data/portfolioData';
+import { fetchProjects } from '../services/api';
+import type { Project } from '../types';
 
 // ─── 3D Tilt Card ──────────────────────────────────────────────────────────────
-function ProjectCard({ project, index }: { project: typeof projects[number]; index: number }) {
+function ProjectCard({ project, index }: { project: Project; index: number }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
 
@@ -75,8 +77,11 @@ function ProjectCard({ project, index }: { project: typeof projects[number]; ind
           style={{ background: `linear-gradient(to right, transparent, ${accent}, transparent)` }}
         />
 
-        {/* Card body */}
-        <div className="flex flex-col flex-1 p-7 relative z-10">
+        {/* Card body - elevated for 3D effect and clickability */}
+        <div 
+          className="flex flex-col flex-1 p-7 relative z-10"
+          style={{ transform: 'translateZ(30px)' }}
+        >
 
           {/* Header row */}
           <div className="flex items-start justify-between mb-6">
@@ -97,24 +102,26 @@ function ProjectCard({ project, index }: { project: typeof projects[number]; ind
             <div className="flex items-center gap-2">
               {project.liveUrl && (
                 <motion.a
-                  href={project.liveUrl}
+                  href={project.liveUrl !== '' ? project.liveUrl : undefined}
                   target="_blank"
                   rel="noreferrer"
                   whileHover={{ scale: 1.1, rotate: -8 }}
-                  className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-neutral-400 hover:text-white hover:border-white/30 transition-colors"
+                  className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-neutral-400 hover:text-white hover:border-white/30 transition-colors pointer-events-auto"
                 >
                   <ExternalLink size={15} />
                 </motion.a>
               )}
-              <motion.a
-                href={project.githubUrl}
-                target="_blank"
-                rel="noreferrer"
-                whileHover={{ scale: 1.1, rotate: 8 }}
-                className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-neutral-400 hover:text-white hover:border-white/30 transition-colors"
-              >
-                <Github size={15} />
-              </motion.a>
+              {project.githubUrl && (
+                <motion.a
+                  href={project.githubUrl !== '' ? project.githubUrl : undefined}
+                  target="_blank"
+                  rel="noreferrer"
+                  whileHover={{ scale: 1.1, rotate: 8 }}
+                  className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-neutral-400 hover:text-white hover:border-white/30 transition-colors pointer-events-auto"
+                >
+                  <Github size={15} />
+                </motion.a>
+              )}
             </div>
           </div>
 
@@ -138,7 +145,7 @@ function ProjectCard({ project, index }: { project: typeof projects[number]; ind
 
           {/* Tech pills */}
           <div className="flex flex-wrap gap-2 pt-4 border-t border-white/6">
-            {project.techStack.map((tech, i) => (
+            {project.techStack.map((tech: string, i: number) => (
               <motion.span
                 key={i}
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -158,19 +165,22 @@ function ProjectCard({ project, index }: { project: typeof projects[number]; ind
           </div>
 
           {/* Always-visible CTA */}
-          <a
-            href={project.liveUrl || project.githubUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-1.5 mt-5 text-xs font-semibold w-fit px-3 py-1.5 rounded-lg border transition-all duration-200 hover:-translate-y-0.5"
-            style={{
-              color: accent,
-              borderColor: accent + '44',
-              backgroundColor: accent + '0d',
-            }}
-          >
-            {project.liveUrl ? 'Live Demo' : 'View Project'} <ArrowUpRight size={13} />
-          </a>
+          {(project.liveUrl || project.githubUrl) && (
+            <a
+              href={project.liveUrl || project.githubUrl || undefined}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 mt-5 text-xs font-semibold w-fit px-3 py-1.5 rounded-lg border transition-all duration-200 hover:-translate-y-0.5 pointer-events-auto"
+              style={{
+                color: accent,
+                borderColor: accent + '44',
+                backgroundColor: accent + '0d',
+                transform: 'translateZ(20px)',
+              }}
+            >
+              {project.liveUrl ? 'Live Demo' : 'View Project'} <ArrowUpRight size={13} />
+            </a>
+          )}
 
         </div>
       </motion.div>
@@ -178,8 +188,50 @@ function ProjectCard({ project, index }: { project: typeof projects[number]; ind
   );
 }
 
+// ─── Skeleton Loader ────────────────────────────────────────────────────────
+function SkeletonCard() {
+  return (
+    <div className="relative flex flex-col h-full rounded-2xl bg-neutral-900/60 border border-white/8 p-7 animate-pulse">
+      <div className="flex items-start justify-between mb-6">
+        <div className="w-11 h-11 rounded-xl bg-white/5" />
+        <div className="flex gap-2">
+          <div className="w-9 h-9 rounded-xl bg-white/5" />
+          <div className="w-9 h-9 rounded-xl bg-white/5" />
+        </div>
+      </div>
+      <div className="h-6 w-2/3 bg-white/5 rounded-lg mb-3" />
+      <div className="space-y-2 flex-grow mb-6">
+        <div className="h-4 bg-white/5 rounded" />
+        <div className="h-4 bg-white/5 rounded w-5/6" />
+        <div className="h-4 bg-white/5 rounded w-4/6" />
+      </div>
+      <div className="flex gap-2 pt-4 border-t border-white/6">
+        <div className="h-6 w-16 bg-white/5 rounded-lg" />
+        <div className="h-6 w-20 bg-white/5 rounded-lg" />
+        <div className="h-6 w-14 bg-white/5 rounded-lg" />
+      </div>
+    </div>
+  );
+}
+
 // ─── Section ──────────────────────────────────────────────────────────────────
 export default function Projects() {
+  const [displayProjects, setDisplayProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProjects()
+      .then(data => {
+        // If the DB has projects, use them; otherwise fall back to static data.
+        setDisplayProjects(data.length > 0 ? data : staticProjects);
+      })
+      .catch(() => {
+        // Backend offline — silently fall back to static data
+        setDisplayProjects(staticProjects);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <section id="projects" className="py-24 relative overflow-hidden">
       {/* Ambient bg glow */}
@@ -207,9 +259,12 @@ export default function Projects() {
 
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((project, i) => (
-            <ProjectCard key={project.id} project={project} index={i} />
-          ))}
+          {loading
+            ? Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)
+            : displayProjects.map((project, i) => (
+                <ProjectCard key={project.id} project={project} index={i} />
+              ))
+          }
         </div>
 
       </div>

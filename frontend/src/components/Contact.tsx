@@ -1,15 +1,30 @@
-import { motion } from 'framer-motion';
-import { Send, Mail, MapPin, Linkedin, Github } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Send, Mail, MapPin, Linkedin, Github, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { useState } from 'react';
+import { submitContact } from '../services/api';
+
+type Status = 'idle' | 'loading' | 'success' | 'error';
 
 export default function Contact() {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [status, setStatus] = useState<Status>('idle');
+  const [errorMsg, setErrorMsg] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    alert("Message sent locally (check console). Backend integration pending.");
-    setFormData({ name: '', email: '', message: '' });
+    setStatus('loading');
+    setErrorMsg('');
+
+    try {
+      await submitContact(formData);
+      setStatus('success');
+      setFormData({ name: '', email: '', message: '' });
+      // Auto-reset after 5 seconds
+      setTimeout(() => setStatus('idle'), 5000);
+    } catch (err: any) {
+      setStatus('error');
+      setErrorMsg(err.message ?? 'Something went wrong. Please try again.');
+    }
   };
 
   return (
@@ -64,7 +79,7 @@ export default function Contact() {
                 <Linkedin size={20} className="text-neutral-200 group-hover:text-[#5badee] transition-colors" />
               </a>
               <a
-                href="https://github.com" target="_blank" rel="noreferrer"
+                href="https://github.com/Akash223-0987" target="_blank" rel="noreferrer"
                 className="group w-12 h-12 rounded-xl bg-neutral-900 border border-white/10 flex items-center justify-center transition-all duration-300 hover:border-teal-400/60 hover:bg-gradient-to-br hover:from-teal-600/20 hover:to-cyan-600/20 hover:shadow-[0_0_20px_rgba(167,139,250,0.5)]"
               >
                 <Github size={20} className="text-neutral-200 group-hover:text-teal-300 transition-colors duration-300" />
@@ -79,54 +94,107 @@ export default function Contact() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="bg-neutral-900/50 border border-white/5 rounded-3xl p-8 backdrop-blur-sm"
           >
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-neutral-200 mb-2">Full Name</label>
-                <input
-                  type="text"
-                  id="name"
-                  required
-                  value={formData.name}
-                  onChange={e => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full bg-neutral-950 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-neutral-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
-                  placeholder="John Doe"
-                />
-              </div>
-              
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-neutral-200 mb-2">Email Address</label>
-                <input
-                  type="email"
-                  id="email"
-                  required
-                  value={formData.email}
-                  onChange={e => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full bg-neutral-950 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-neutral-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
-                  placeholder="john@example.com"
-                />
-              </div>
-              
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-neutral-200 mb-2">Message</label>
-                <textarea
-                  id="message"
-                  required
-                  rows={4}
-                  value={formData.message}
-                  onChange={e => setFormData({ ...formData, message: e.target.value })}
-                  className="w-full bg-neutral-950 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-neutral-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all resize-none"
-                  placeholder="How can I help you?"
-                />
-              </div>
-              
-              <button
-                type="submit"
-                className="w-full bg-white text-neutral-950 hover:bg-neutral-200 font-bold px-6 py-4 rounded-xl flex items-center justify-center gap-2 transition-colors duration-300 group"
-              >
-                Send Message
-                <Send size={18} className="group-hover:translate-x-1 transition-transform" />
-              </button>
-            </form>
+            {/* Success state */}
+            <AnimatePresence mode="wait">
+              {status === 'success' ? (
+                <motion.div
+                  key="success"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="flex flex-col items-center justify-center h-full py-16 text-center gap-4"
+                >
+                  <div className="w-16 h-16 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center">
+                    <CheckCircle size={32} className="text-emerald-400" />
+                  </div>
+                  <h4 className="text-xl font-bold text-white">Message Sent!</h4>
+                  <p className="text-neutral-400 text-sm max-w-xs">
+                    Thanks for reaching out. I'll get back to you as soon as possible.
+                  </p>
+                </motion.div>
+              ) : (
+                <motion.form
+                  key="form"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onSubmit={handleSubmit}
+                  className="space-y-6"
+                >
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-neutral-200 mb-2">Full Name</label>
+                    <input
+                      type="text"
+                      id="name"
+                      required
+                      disabled={status === 'loading'}
+                      value={formData.name}
+                      onChange={e => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full bg-neutral-950 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-neutral-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all disabled:opacity-50"
+                      placeholder="John Doe"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-neutral-200 mb-2">Email Address</label>
+                    <input
+                      type="email"
+                      id="email"
+                      required
+                      disabled={status === 'loading'}
+                      value={formData.email}
+                      onChange={e => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full bg-neutral-950 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-neutral-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all disabled:opacity-50"
+                      placeholder="john@example.com"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="message" className="block text-sm font-medium text-neutral-200 mb-2">Message</label>
+                    <textarea
+                      id="message"
+                      required
+                      rows={4}
+                      disabled={status === 'loading'}
+                      value={formData.message}
+                      onChange={e => setFormData({ ...formData, message: e.target.value })}
+                      className="w-full bg-neutral-950 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-neutral-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all resize-none disabled:opacity-50"
+                      placeholder="How can I help you?"
+                    />
+                  </div>
+
+                  {/* Error banner */}
+                  {status === 'error' && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm"
+                    >
+                      <AlertCircle size={16} className="flex-shrink-0" />
+                      <span>{errorMsg || 'Failed to send message. Is the backend running?'}</span>
+                    </motion.div>
+                  )}
+                  
+                  <button
+                    type="submit"
+                    disabled={status === 'loading'}
+                    className="w-full bg-white text-neutral-950 hover:bg-neutral-200 font-bold px-6 py-4 rounded-xl flex items-center justify-center gap-2 transition-colors duration-300 group disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {status === 'loading' ? (
+                      <>
+                        <Loader2 size={18} className="animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        Send Message
+                        <Send size={18} className="group-hover:translate-x-1 transition-transform" />
+                      </>
+                    )}
+                  </button>
+                </motion.form>
+              )}
+            </AnimatePresence>
           </motion.div>
         </div>
       </div>
