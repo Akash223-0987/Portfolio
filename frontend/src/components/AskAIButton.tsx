@@ -54,15 +54,15 @@ export default function AskAIButton({ onClick, isFloating = false }: AskAIButton
       onClick={handleClick}
       whileHover={{ scale: 1.03 }}
       whileTap={{ scale: 0.97 }}
-      className="relative flex items-center gap-2 px-3.5 py-1.5 rounded-full text-sm font-semibold 
+      className="relative flex items-center gap-2.5 px-4 py-1.5 rounded-full text-sm font-semibold 
       bg-neutral-900/80 backdrop-blur-md border border-white/10 hover:border-emerald-600/40 transition-all duration-300 
       group ml-2"
     >
       <div className="absolute inset-0 bg-emerald-500/0 group-hover:bg-emerald-500/5 rounded-full transition-colors pointer-events-none" />
       <div className="relative flex items-center justify-center">
-        <Bot size={15} className="text-emerald-400 group-hover:animate-pulse" />
+        <Bot size={16} className="text-emerald-400 group-hover:animate-pulse" />
       </div>
-      <span className="tracking-wide text-neutral-300 group-hover:text-emerald-400 transition-colors ml-0.5">ARC</span>
+      <span className="tracking-wide text-neutral-300 group-hover:text-emerald-400 transition-colors">Ask ARC</span>
     </motion.button>
   );
 }
