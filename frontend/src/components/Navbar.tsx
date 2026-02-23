@@ -195,10 +195,15 @@ export default function Navbar({ onOpenAI }: { onOpenAI: () => void }) {
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ 
+                type: 'spring', 
+                stiffness: 600, 
+                damping: 45,
+                opacity: { duration: 0.2 }
+              }}
               className="md:hidden w-full px-6 pb-6 overflow-hidden"
             >
               <div className="flex flex-col space-y-2 mt-2 border-t border-white/5 pt-6">
