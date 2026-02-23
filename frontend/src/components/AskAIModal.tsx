@@ -138,14 +138,14 @@ export default function AskAIModal({ isOpen, onClose }: AskAIModalProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-2xl bg-zinc-900 border border-emerald-500/30 shadow-[0_0_30px_rgba(16,185,129,0.15)] rounded-xl overflow-hidden flex flex-col h-[80vh] max-h-[700px] z-10"
+            className="relative w-full max-w-2xl bg-zinc-900 border border-emerald-600/20 shadow-[0_0_20px_rgba(16,185,129,0.08)] rounded-xl overflow-hidden flex flex-col h-[80vh] max-h-[700px] z-10"
           >
             {/* Subtle Grid Line Scan Effect (Solid, No blur) */}
             <div className="absolute inset-0 pointer-events-none opacity-10 bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:24px_24px] z-0 mix-blend-overlay">
                <motion.div 
                  animate={{ y: ['-100%', '200%'] }} 
                  transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-                 className="absolute inset-0 h-[2px] bg-emerald-400/50 shadow-[0_0_10px_rgba(52,211,153,1)]"
+                 className="absolute inset-0 h-[2px] bg-emerald-400/20 shadow-[0_0_6px_rgba(52,211,153,0.4)]"
                />
             </div>
 
@@ -157,7 +157,7 @@ export default function AskAIModal({ isOpen, onClose }: AskAIModalProps) {
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-white leading-tight">Ask ARC</h2>
-                  <p className="text-sm text-neutral-400">Ask about projects, skills, internships, or tech stack.</p>
+                  <p className="text-sm text-neutral-400">Curious about my work? Ask about projects, skills, or technologies I use.</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">

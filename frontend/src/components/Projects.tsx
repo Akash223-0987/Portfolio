@@ -14,7 +14,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
       transition={{ duration: 0.5, delay: index * 0.1 }}
       className="h-full"
     >
-      <div className="flex flex-col h-full rounded-2xl p-7 bg-neutral-900 border border-white/10 hover:border-emerald-500/50 transition-colors group">
+      <div className="flex flex-col h-full rounded-2xl p-7 bg-neutral-900 border border-white/8 hover:border-emerald-600/30 transition-colors group">
         
         {/* Header - Title */}
         <div className="mb-4">
@@ -117,8 +117,7 @@ export default function Projects() {
 
   return (
     <section id="projects" className="py-24 relative overflow-hidden">
-      {/* Ambient bg glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(52,211,153,0.06),_transparent_60%)] pointer-events-none" />
+
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
@@ -130,12 +129,9 @@ export default function Projects() {
           transition={{ duration: 0.7, ease: 'easeOut' }}
           className="mb-16"
         >
-          <div className="flex items-center gap-4 mb-3">
-            <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight">
-              Featured Projects
-            </h2>
-            <div className="h-[1px] flex-1 bg-gradient-to-r from-emerald-500/50 to-transparent hidden md:block" />
-          </div>
+          <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight mb-3">
+            Featured Projects
+          </h2>
           <p className="text-neutral-400 text-base mt-2">Things I've built that I'm proud of.</p>
           <div className="w-20 h-1 bg-emerald-500 rounded-full mt-4" />
         </motion.div>

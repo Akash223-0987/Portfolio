@@ -6,7 +6,7 @@ const educationData = [
   {
     id: 1,
     title: 'Class 12th',
-    institution: 'Kendriya Vidyalaya Berhampur',
+    institution: 'Kendriya Vidyalaya, Berhampur',
     date: '2023',
     description: 'Completed higher secondary education with a strong foundation in science and mathematics.',
     icon: BookOpen,
@@ -14,10 +14,10 @@ const educationData = [
   },
   {
     id: 2,
-    title: 'B.Tech in Computer Science',
-    institution: 'Vellore Institute of Technology (VIT) AP, Andhra Pradesh',
+    title: 'B.Tech in Computer Science Engineering (Data Analytics)',
+    institution: 'Vellore Institute of Technology (VIT-AP), Andhra Pradesh',
     date: '2024 – Present',
-    description: 'Pursuing undergraduate degree with a focus on core computer science subjects, software engineering, and modern web development technologies.',
+    description: 'Pursuing Computer Science Engineering with a specialization in Data Analytics, focusing on programming, data analysis, and modern software development.',
     icon: GraduationCap,
     color: '#10b981',
   },
@@ -62,7 +62,7 @@ export default function Education() {
               style={{
                 height: lineHeight,
                 background: 'linear-gradient(to bottom, #34d399, #10b981, #059669)',
-                boxShadow: '0 0 12px rgba(52,211,153,0.6)',
+                boxShadow: '0 0 6px rgba(52,211,153,0.3)',
               }}
             />
           </div>
@@ -84,15 +84,15 @@ export default function Education() {
                 >
                   {/* Ping halo */}
                   <span
-                    className="absolute inset-0 rounded-full animate-ping opacity-30"
+                    className="absolute inset-0 rounded-full animate-ping opacity-10"
                     style={{ backgroundColor: item.color }}
                   />
                   {/* Core circle */}
                   <div
-                    className="relative w-10 h-10 rounded-full border-4 border-neutral-950 flex items-center justify-center shadow-lg"
+                    className="relative w-10 h-10 rounded-full border-4 border-neutral-950 flex items-center justify-center shadow-md"
                     style={{
                       backgroundColor: item.color,
-                      boxShadow: `0 0 20px ${item.color}88`,
+                      boxShadow: `0 0 10px ${item.color}40`,
                     }}
                   >
                     <Icon size={16} className="text-neutral-950" strokeWidth={2.5} />

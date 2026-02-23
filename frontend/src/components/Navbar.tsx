@@ -134,16 +134,16 @@ export default function Navbar() {
                   className="relative p-[1.5px] rounded-full overflow-hidden group ml-2"
                 >
                   <motion.div
-                    className="absolute inset-[-1000%] bg-[conic-gradient(from_90deg_at_50%_50%,#00000000_50%,#34d399_100%)]"
+                    className="absolute inset-[-1000%] bg-[conic-gradient(from_90deg_at_50%_50%,#00000000_50%,rgba(52,211,153,0.7)_100%)]"
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 2.5, repeat: Infinity, ease: 'linear' }}
+                    transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
                   />
                   <a
                     href="#contact"
                     onClick={(e) => scrollToSection(e, '#contact')}
                     className="relative flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold
                       bg-neutral-950 text-white hover:bg-neutral-900 transition-all duration-300
-                      w-full h-full z-10 group-hover:shadow-[0_0_20px_rgba(52,211,153,0.4)] whitespace-nowrap"
+                      w-full h-full z-10 whitespace-nowrap"
                   >
                     <Mail size={15} className="text-emerald-400 group-hover:scale-110 transition-transform duration-300" />
                     <span className="tracking-wide">Contact</span>

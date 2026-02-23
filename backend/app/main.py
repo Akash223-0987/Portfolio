@@ -9,10 +9,17 @@ from app.ai.ai_routes import router as ai_router
 
 app = FastAPI()
 
-# Add CORS middleware
+ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://localhost:4173",
+    # Add your Cloudflare Pages URL here after deploying, e.g.:
+    # "https://akash-portfolio.pages.dev",
+    # "https://your-custom-domain.com",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Adjust this to your frontend URL in production
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

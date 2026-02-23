@@ -31,10 +31,10 @@ export default function AskAIButton({ onClick, isMobile = false }: AskAIButtonPr
     <motion.button
       ref={buttonRef}
       onClick={handleClick}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.97 }}
       className="relative flex items-center gap-2.5 px-4 py-1.5 rounded-full text-sm font-semibold 
-      bg-neutral-950/80 backdrop-blur-md border border-white/5 hover:border-emerald-500/30 transition-all duration-300 
+      bg-neutral-900/80 backdrop-blur-md border border-white/10 hover:border-emerald-600/40 transition-all duration-300 
       group ml-2"
     >
       {/* Background Glow on hover */}
