@@ -12,9 +12,7 @@ app = FastAPI()
 ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:4173",
-    # Add your Cloudflare Pages URL here after deploying, e.g.:
-    # "https://akash-portfolio.pages.dev",
-    # "https://your-custom-domain.com",
+    "https://dakashdora.vercel.app",
 ]
 
 app.add_middleware(
