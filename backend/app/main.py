@@ -7,6 +7,7 @@ from app.ai.ai_routes import router as ai_router
 
 
 
+
 app = FastAPI()
 
 ALLOWED_ORIGINS = [
@@ -31,3 +32,8 @@ app.include_router(ai_router, prefix="/ai", tags=["AI"])
 @app.get("/")
 async def root():
     return {"message": "Portfolio Backend Running 🚀"}
+
+
+@app.get("/healthz")
+def health_check():
+    return {"status": "ok"}
