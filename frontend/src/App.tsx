@@ -1,8 +1,13 @@
+import { useState } from 'react';
 import Home from './pages/Home';
 import { motion } from 'framer-motion';
 import { SparklesCore } from './components/ui/sparkles';
+import AskAIButton from './components/AskAIButton';
+import AskAIModal from './components/AskAIModal';
 
 function App() {
+  const [isAIModalOpen, setIsAIModalOpen] = useState(false);
+
   return (
     <div className="bg-black min-h-screen text-neutral-200 font-sans antialiased selection:bg-emerald-500/30 selection:text-emerald-200 relative overflow-hidden">
       {/* Dynamic Background Elements */}
@@ -42,7 +47,11 @@ function App() {
         />
       </div>
 
-      <Home />
+      <Home onOpenAI={() => setIsAIModalOpen(true)} />
+
+      {/* Global AI Floating interface (Mobile Only) */}
+      <AskAIButton onClick={() => setIsAIModalOpen(true)} isFloating />
+      <AskAIModal isOpen={isAIModalOpen} onClose={() => setIsAIModalOpen(false)} />
     </div>
   );
 }

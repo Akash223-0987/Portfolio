@@ -3,7 +3,6 @@ import { Menu, X, Home, User, Lightbulb, Code, GraduationCap, Mail } from 'lucid
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../utils';
 import AskAIButton from './AskAIButton';
-import AskAIModal from './AskAIModal';
 
 const navLinks = [
   { name: 'Home', href: '#home', icon: <Home size={18} /> },
@@ -13,47 +12,59 @@ const navLinks = [
   { name: 'Education', href: '#education', icon: <GraduationCap size={18} /> },
 ];
 
-export default function Navbar() {
+export default function Navbar({ onOpenAI }: { onOpenAI: () => void }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   
-  const [isAIModalOpen, setIsAIModalOpen] = useState(false);
 
-  const handleOpenAI = () => {
-    setIsAIModalOpen(true);
-  };
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
 
-      const sections = [...navLinks.map(link => link.name.toLowerCase()), 'contact'];
+      // Define all target sections for active state monitoring
+      const sections = ['home', 'about', 'skills', 'projects', 'education', 'contact'];
+      
       const current = sections.find(section => {
         const element = document.getElementById(section);
         if (element) {
           const rect = element.getBoundingClientRect();
-          return rect.top >= -100 && rect.top <= 300;
+          // Adjust detection range for mobile/desktop headers
+          return rect.top >= -200 && rect.top <= 400;
         }
         return false;
       });
       if (current) setActiveSection(current);
     };
 
-    // passive: true prevents the listener from blocking scroll paint
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  const scrollToSection = (e: React.MouseEvent, href: string) => {
     e.preventDefault();
+    
+    // Extract ID (e.g. "#skills" -> "skills")
+    const targetId = href.replace('#', '');
+    const element = document.getElementById(targetId);
+    
+    // Close menu FIRST so the scroll calculation is accurate 
+    // or keep it open for a split second for the animation
     setMobileMenuOpen(false);
-    const element = document.querySelector(href);
+
     if (element) {
-      window.scrollTo({
-        top: element.getBoundingClientRect().top + window.scrollY - 80,
-        behavior: 'smooth',
-      });
+      // Small timeout ensures the menu-closing layout shift doesn't mess with scroll position
+      setTimeout(() => {
+        const offset = 80; // height of the navbar
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth',
+        });
+      }, 100);
     }
   };
 
@@ -63,15 +74,21 @@ export default function Navbar() {
       className="fixed top-6 left-0 right-0 z-50 flex justify-center w-full pointer-events-none px-4"
       style={{ transform: 'translateZ(0)', willChange: 'transform' }}
     >
-      <nav
+      <motion.nav
+        layout
+        initial={false}
         className={cn(
-          // Only transition the properties that actually change — avoids layout recalc on "all"
-          'pointer-events-auto transition-[background-color,border-color,box-shadow] duration-300 overflow-visible flex flex-col rounded-full border',
+          'pointer-events-auto transition-[background-color,border-color,box-shadow] duration-200 overflow-hidden flex flex-col border',
           isScrolled || mobileMenuOpen
-            ? 'bg-neutral-950/70 backdrop-blur-xl border-white/10 shadow-2xl'
-            : 'bg-white/5 backdrop-blur-md border-white/10'
+            ? 'bg-neutral-950/85 backdrop-blur-xl border-white/10 shadow-2xl'
+            : 'bg-white/5 backdrop-blur-md border-white/10',
+          mobileMenuOpen ? 'rounded-[2.5rem] w-full max-w-[95vw] sm:max-w-[420px]' : 'rounded-full'
         )}
-        style={{ transform: 'translateZ(0)', willChange: 'transform' }}
+        transition={{
+          layout: { type: 'spring', stiffness: 600, damping: 45, mass: 1 },
+          opacity: { duration: 0.1 }
+        }}
+        style={{ willChange: 'transform, height' }}
       >
         <div className="flex justify-between items-center h-14 px-6 md:px-8 max-w-[1200px] relative gap-4 md:gap-8">
 
@@ -80,7 +97,7 @@ export default function Navbar() {
             className="flex-shrink-0 flex items-center h-8 cursor-pointer"
             onClick={(e) => scrollToSection(e as any, '#home')}
           >
-            <span className="text-xl font-bold tracking-tighter text-white">
+            <span className="text-lg sm:text-xl font-bold tracking-tighter text-white">
               D AKASH DORA
             </span>
           </div>
@@ -121,7 +138,9 @@ export default function Navbar() {
               })}
             </div>
 
-            <AskAIButton onClick={handleOpenAI} />
+            <AskAIButton onClick={onOpenAI} />
+
+
 
             {/* Standalone Contact CTA — contextual hide when in contact section */}
             <AnimatePresence>
@@ -153,59 +172,69 @@ export default function Navbar() {
             </AnimatePresence>
           </div>
 
-          {/* Mobile hamburger */}
-          <div className="md:hidden flex items-center">
+          <div className="md:hidden flex items-center pr-2">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-neutral-200 hover:text-white focus:outline-none p-1 transition-colors"
+              className="text-neutral-200 hover:text-white focus:outline-none p-2 transition-colors relative z-10"
             >
-              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={mobileMenuOpen ? 'close' : 'menu'}
+                  initial={{ opacity: 0, rotate: -90, scale: 0.8 }}
+                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                  exit={{ opacity: 0, rotate: 90, scale: 0.8 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                >
+                  {mobileMenuOpen ? <X size={22} strokeWidth={2.5} /> : <Menu size={22} strokeWidth={2.5} />}
+                </motion.div>
+              </AnimatePresence>
             </button>
           </div>
         </div>
 
-        {/* Mobile menu dropdown */}
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="md:hidden w-full px-4 pb-4 overflow-hidden rounded-b-3xl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="md:hidden w-full px-6 pb-6 overflow-hidden"
             >
-              <div className="flex flex-col space-y-1 mt-2 border-t border-white/10 pt-4">
-                {navLinks.map((link) => (
-                  <a
+              <div className="flex flex-col space-y-2 mt-2 border-t border-white/5 pt-6">
+                {navLinks.map((link, i) => (
+                  <motion.a
                     key={link.name}
                     href={link.href}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.04 + 0.1, duration: 0.3 }}
                     onClick={(e) => scrollToSection(e, link.href)}
                     className={cn(
-                      'block px-4 py-3 rounded-xl text-sm font-medium transition-colors',
+                      'block px-5 py-3.5 rounded-2xl text-[15px] font-medium transition-all duration-300',
                       activeSection === link.name.toLowerCase()
-                        ? 'bg-emerald-500/15 text-emerald-400'
+                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/10'
                         : 'text-neutral-300 hover:bg-white/5 hover:text-white'
                     )}
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="opacity-100">{link.icon}</span>
+                    <div className="flex items-center gap-4">
+                      <span className={cn(
+                         "transition-colors duration-300",
+                         activeSection === link.name.toLowerCase() ? "text-emerald-400" : "text-neutral-400"
+                      )}>
+                        {link.icon}
+                      </span>
                       {link.name}
                     </div>
-                  </a>
+                  </motion.a>
                 ))}
-                <div className="pt-2 px-2 pb-1">
-                  <AskAIButton onClick={handleOpenAI} isMobile />
-                </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-      </nav>
+      </motion.nav>
 
-      <AskAIModal 
-        isOpen={isAIModalOpen} 
-        onClose={() => setIsAIModalOpen(false)} 
-      />
+
     </div>
   );
 }
