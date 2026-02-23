@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Bot, User, Trash2 } from 'lucide-react';
 import { cn } from '../utils';
-import { sendChatMessage } from '../services/api';
+import { streamChatMessage } from '../services/api';
 import ReactMarkdown from 'react-markdown';
 
 interface Message {
@@ -92,28 +92,48 @@ export default function AskAIModal({ isOpen, onClose }: AskAIModalProps) {
     if (!inputValue.trim() || isAnalyzing) return;
 
     const userMessage = inputValue;
-    setMessages(prev => [...prev, { id: Date.now().toString(), type: 'user', text: userMessage }]);
+    const userMsgId = Date.now().toString();
+    const botMsgId = (Date.now() + 1).toString();
+
+    // Add user message only (don't add bot placeholder yet to avoid double icons)
+    setMessages(prev => [...prev, { id: userMsgId, type: 'user', text: userMessage }]);
     setInputValue('');
     setIsTyping(true);
 
     try {
-      const chatResponse = await sendChatMessage(userMessage);
-      setMessages(prev => [...prev, {
-        id: (Date.now() + 1).toString(),
-        type: 'bot',
-        text: chatResponse.response,
-      }]);
-    } catch (error) {
-      console.error('Failed to get chat response:', error);
-      setMessages(prev => [...prev, {
-        id: (Date.now() + 1).toString(),
-        type: 'bot',
-        text: "I'm currently having a little trouble connecting to my central servers. Please try again soon!",
-      }]);
+      let fullText = '';
+      const stream = streamChatMessage(userMessage);
+      let isFirstChunk = true;
+
+      for await (const chunk of stream) {
+        if (isFirstChunk) {
+          setIsTyping(false); // Hide the typing dots
+          // Add the bot message for the first time
+          setMessages(prev => [...prev, { id: botMsgId, type: 'bot', text: chunk }]);
+          fullText = chunk;
+          isFirstChunk = false;
+        } else {
+          fullText += chunk;
+          // Progressive update of the existing bot message
+          setMessages(prev => 
+            prev.map(msg => 
+              msg.id === botMsgId ? { ...msg, text: fullText } : msg
+            )
+          );
+        }
+      }
+    } catch (error: any) {
+      console.error('AI Stream Error:', error);
+      setIsTyping(false);
+      setMessages(prev => [
+        ...prev,
+        { id: botMsgId, type: 'bot', text: "The AI engines are currently cooling down. Please try again in 60 seconds!" }
+      ]);
     } finally {
       setIsTyping(false);
     }
   };
+
 
   return createPortal(
     <AnimatePresence>

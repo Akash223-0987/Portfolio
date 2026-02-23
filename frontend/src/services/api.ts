@@ -160,3 +160,30 @@ export async function sendChatMessage(message: string): Promise<{ response: stri
 
   return res.json();
 }
+
+/**
+ * Streams the AI response for maximum speed.
+ */
+export async function* streamChatMessage(message: string): AsyncIterableIterator<string> {
+  const res = await fetch(`${API_BASE}/ai/chat/stream`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err?.detail ?? 'AI engine busy');
+  }
+
+  const reader = res.body?.getReader();
+  if (!reader) throw new Error('Streaming not supported');
+
+  const decoder = new TextDecoder();
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    yield decoder.decode(value, { stream: true });
+  }
+}
+
