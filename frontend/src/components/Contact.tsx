@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Mail, MapPin, Linkedin, Github, CheckCircle, AlertCircle, Loader2, Instagram } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 import { useState } from 'react';
-import { submitContact } from '../services/api';
 
 type Status = 'idle' | 'loading' | 'success' | 'error';
 
@@ -16,14 +16,38 @@ export default function Contact() {
     setErrorMsg('');
 
     try {
-      await submitContact(formData);
+      // 1️⃣ Send email to YOU
+      await emailjs.send(
+        import.meta.env.VITE_EMAIL_SERVICE_ID,
+        import.meta.env.VITE_EMAIL_TEMPLATE_ID,
+        {
+          user_name: formData.name,
+          user_email: formData.email,
+          message: formData.message,
+        },
+        import.meta.env.VITE_EMAIL_PUBLIC_KEY
+      );
+
+      // 2️⃣ Send auto reply to USER
+      await emailjs.send(
+        import.meta.env.VITE_EMAIL_SERVICE_ID,
+        import.meta.env.VITE_EMAIL_AUTOREPLY_TEMPLATE_ID,
+        {
+          user_name: formData.name,
+          user_email: formData.email,
+          message: formData.message,
+        },
+        import.meta.env.VITE_EMAIL_PUBLIC_KEY
+      );
+
       setStatus('success');
       setFormData({ name: '', email: '', message: '' });
       // Auto-reset after 5 seconds
       setTimeout(() => setStatus('idle'), 5000);
     } catch (err: any) {
+      console.error('EmailJS Error:', err);
       setStatus('error');
-      setErrorMsg(err.message ?? 'Something went wrong. Please try again.');
+      setErrorMsg(err.text ?? 'Something went wrong. Please try again.');
     }
   };
 
