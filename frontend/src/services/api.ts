@@ -145,6 +145,62 @@ export async function deleteProject(id: string): Promise<{ message: string }> {
   return res.json();
 }
 
+// ─── Admin Resume ─────────────────────────────────────────────────────────────
+export async function getResumeStatus(): Promise<{ exists: boolean; filename: string | null }> {
+  const res = await fetch(`${API_BASE}/resume/status`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error('Failed to fetch resume status');
+  return res.json();
+}
+
+export async function uploadResume(file: File): Promise<{ message: string; filename: string }> {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const headers: Record<string, string> = {};
+  const token = localStorage.getItem('admin_token');
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  // Let the browser set Content-Type correctly for multipart/form-data
+
+  const res = await fetch(`${API_BASE}/resume/`, {
+    method: 'POST',
+    headers,
+    body: formData,
+  });
+
+  if (!res.ok) {
+    if (res.status === 401) {
+      localStorage.removeItem('admin_token');
+      window.location.href = '/admin/login';
+    }
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err?.detail ?? 'Failed to upload resume');
+  }
+
+  return res.json();
+}
+
+export async function deleteResume(): Promise<{ message: string }> {
+  const res = await fetch(`${API_BASE}/resume/`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
+
+  if (!res.ok) {
+    if (res.status === 401) {
+      localStorage.removeItem('admin_token');
+      window.location.href = '/admin/login';
+    }
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err?.detail ?? 'Failed to delete resume');
+  }
+
+  return res.json();
+}
+
 // ─── AI Chat ──────────────────────────────────────────────────────────────────
 export async function sendChatMessage(message: string): Promise<{ response: string }> {
   const res = await fetch(`${API_BASE}/ai/chat`, {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Edit2, Trash2, X, AlertCircle } from 'lucide-react';
-import { fetchProjects, createProject, updateProject, deleteProject } from '../../services/api';
+import { Plus, Edit2, Trash2, X, AlertCircle, Upload, FileText, Download } from 'lucide-react';
+import { fetchProjects, createProject, updateProject, deleteProject, getResumeStatus, uploadResume, deleteResume } from '../../services/api';
 import type { ProjectFromAPI } from '../../services/api';
 
 type FormState = Omit<ProjectFromAPI, 'id'>;
@@ -28,6 +28,19 @@ export default function ProjectsList() {
   // Notification State
   const [error, setError] = useState('');
 
+  // Resume State
+  const [resumeStatus, setResumeStatus] = useState<{ exists: boolean; filename: string | null }>({ exists: false, filename: null });
+  const [uploadingResume, setUploadingResume] = useState(false);
+
+  const loadResume = async () => {
+    try {
+      const status = await getResumeStatus();
+      setResumeStatus(status);
+    } catch (err: any) {
+      console.error('Failed to load resume status', err);
+    }
+  };
+
   const loadProjects = async () => {
     setLoading(true);
     try {
@@ -42,7 +55,39 @@ export default function ProjectsList() {
 
   useEffect(() => {
     loadProjects();
+    loadResume();
   }, []);
+
+  const handleResumeFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    if (file.type !== 'application/pdf') {
+      setError('Only PDF resumes are allowed.');
+      return;
+    }
+
+    setUploadingResume(true);
+    setError('');
+    try {
+      await uploadResume(file);
+      await loadResume();
+      e.target.value = '';
+    } catch (err: any) {
+      setError(err.message || 'Failed to upload resume');
+    } finally {
+      setUploadingResume(false);
+    }
+  };
+
+  const handleResumeDelete = async () => {
+    if (!confirm('Are you sure you want to delete the current resume?')) return;
+    try {
+      await deleteResume();
+      await loadResume();
+    } catch (err: any) {
+      setError(err.message || 'Failed to delete resume');
+    }
+  };
 
   const handleOpenAdd = () => {
     setFormData(defaultForm);
@@ -100,9 +145,63 @@ export default function ProjectsList() {
 
   return (
     <div className="max-w-6xl mx-auto py-6">
-      <div className="flex justify-between items-center mb-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-white">Dashboard</h1>
+        <p className="text-neutral-400 mt-1">Manage your portfolio content</p>
+      </div>
+
+      {error && (
+        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl flex items-center gap-3">
+          <AlertCircle size={20} />
+          {error}
+        </div>
+      )}
+
+      {/* Resume Section */}
+      <div className="mb-10 bg-neutral-900 border border-white/10 rounded-2xl p-6 shadow-2xl relative">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-3 bg-white/5 rounded-xl border border-white/10 text-emerald-400">
+              <FileText size={24} />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-white">Resume Status</h2>
+              <p className="text-sm text-neutral-400">Upload, update, or delete your professional resume.</p>
+            </div>
+          </div>
+          <div>
+            <label className="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-xl transition-colors shadow-[0_0_15px_rgba(16,185,129,0.3)] cursor-pointer">
+              <Upload size={18} /> {uploadingResume ? 'Uploading...' : (resumeStatus.exists ? 'Update Resume' : 'Upload Resume')}
+              <input type="file" accept="application/pdf" className="hidden" disabled={uploadingResume} onChange={handleResumeFileChange} />
+            </label>
+          </div>
+        </div>
+
+        {resumeStatus.exists ? (
+          <div className="mt-4 p-4 border border-white/5 bg-white/[0.02] rounded-xl flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <FileText size={20} className="text-emerald-500" />
+              <span className="text-white font-medium">{resumeStatus.filename || 'resume.pdf'}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <a href={`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'}/resume/`} target="_blank" rel="noopener noreferrer" className="p-2 hover:bg-white/10 rounded-lg text-neutral-400 hover:text-white transition-colors">
+                <Download size={18} />
+              </a>
+              <button onClick={handleResumeDelete} className="p-2 hover:bg-red-500/20 rounded-lg text-neutral-400 hover:text-red-400 transition-colors">
+                <Trash2 size={18} />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-4 p-4 border border-white/5 border-dashed rounded-xl flex items-center justify-center text-neutral-500">
+            No resume uploaded yet.
+          </div>
+        )}
+      </div>
+
+      <div className="flex justify-between items-center mb-6 mt-8">
         <div>
-          <h1 className="text-3xl font-bold text-white">Projects</h1>
+          <h2 className="text-2xl font-bold text-white">Projects</h2>
           <p className="text-neutral-400 mt-1">Manage your portfolio projects</p>
         </div>
         <button
@@ -112,13 +211,6 @@ export default function ProjectsList() {
           <Plus size={18} /> Add Project
         </button>
       </div>
-
-      {error && (
-        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl flex items-center gap-3">
-          <AlertCircle size={20} />
-          {error}
-        </div>
-      )}
 
       {/* Projects Table */}
       <div className="bg-neutral-900 border border-white/10 rounded-2xl overflow-hidden shadow-2xl backdrop-blur-sm relative">
