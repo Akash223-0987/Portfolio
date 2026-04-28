@@ -39,7 +39,8 @@ async def generate_ai_response_stream(user_message: str):
     """
 
     models_to_try = [
-        "stepfun/step-3.5-flash:free",
+        "poolside/laguna-xs.2:free",
+        "minimax/minimax-m2.5:free",
         "deepseek/deepseek-chat:free",
         "google/gemma-3-4b-it:free",
         "meta-llama/llama-3.3-70b-instruct:free"
@@ -83,9 +84,18 @@ async def generate_ai_response_stream(user_message: str):
                                 break
                             try:
                                 data = json.loads(data_str)
-                                content = data["choices"][0]["delta"].get("content", "")
-                                if content:
-                                    yield content
+
+                                if "usage" in data:
+                                    usage = data["usage"]
+                                    reasoning_tokens = usage.get("reasoningTokens", usage.get("reasoning_tokens"))
+                                    if reasoning_tokens:
+                                        print(f"\nReasoning tokens: {reasoning_tokens}")
+
+                                if "choices" in data and len(data["choices"]) > 0:
+                                    delta = data["choices"][0].get("delta", {})
+                                    content = delta.get("content", "")
+                                    if content:
+                                        yield content
                             except:
                                 continue
                     return # Successfully streamed
