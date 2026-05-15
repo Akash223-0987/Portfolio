@@ -94,10 +94,15 @@ async def generate_ai_response_stream(user_message: str):
 
                                 if "choices" in data and len(data["choices"]) > 0:
                                     delta = data["choices"][0].get("delta", {})
+                                    # Skip internal reasoning/thinking tokens — never expose to users
+                                    delta_type = delta.get("type", "")
+                                    if delta_type == "reasoning":
+                                        continue
                                     content = delta.get("content", "")
                                     if content:
                                         yield content
-                            except:
+                            except Exception as parse_err:
+                                print(f"SSE parse error: {parse_err}")
                                 continue
                     return # Successfully streamed
 

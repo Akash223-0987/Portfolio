@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { streamChatMessage } from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Terminal, Minimize2, Maximize2 } from 'lucide-react';
 
@@ -29,8 +30,8 @@ function getBanner(): RawLine[] {
     { type: 'ascii',  content: '██║  ██║██║  ██╗██║  ██║███████║██║  ██║' },
     { type: 'ascii',  content: '╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝' },
     { type: 'output', content: '' },
-    { type: 'info',   content: "  Welcome to Akash's Portfolio Terminal v1.0" },
-    { type: 'output', content: '  Type  help  to see all available commands.' },
+    { type: 'info',   content: "  Welcome to Akash's Portfolio Terminal v2.0 — powered by ARC AI" },
+    { type: 'output', content: '  Type  help  to see all commands.  Try  ask <question>  to chat with AI.' },
     { type: 'output', content: '' },
   ];
 }
@@ -60,6 +61,10 @@ const COMMANDS: Record<string, { description: string; fn: () => RawLine[] }> = {
       { type: 'output',  content: '  open kairos      → Launch Kairos AI chatbot' },
       { type: 'output',  content: '  open nubesvault  → Launch NubesVault storage app' },
       { type: 'output',  content: '  open mario       → Gesture Mario on GitHub' },
+      { type: 'output',  content: '' },
+      { type: 'success', content: '  🤖  AI ASSISTANT (ARC)' },
+      { type: 'output',  content: '  ask <question>   → Ask the ARC AI anything about Akash' },
+      { type: 'output',  content: '  arc <question>   → Alias for ask' },
       { type: 'output',  content: '' },
       { type: 'success', content: '  ⚙️  SYSTEM' },
       { type: 'output',  content: '  clear            → Clear terminal  (Ctrl+L)' },
@@ -220,6 +225,7 @@ export default function CLITerminal({ isOpen, onClose }: CLITerminalProps) {
   const [cmdHistory, setCmdHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [isMaximized, setIsMaximized]   = useState(false);
+  const [isAIStreaming, setIsAIStreaming] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -261,7 +267,81 @@ export default function CLITerminal({ isOpen, onClose }: CLITerminalProps) {
       return;
     }
 
-    if (cmd === 'echo') {
+    // ── AI ask / arc command ─────────────────────────────────────────────────
+    if ((cmd === 'ask' || cmd === 'arc') && args.length > 0) {
+      // Reconstruct question from original raw input (preserve casing)
+      const question = raw.trim().slice(cmd.length).trim();
+      const thinkingId = lineIdCounter++;
+      const responseId = lineIdCounter++;
+
+      setHistory(prev => [
+        ...prev,
+        cmdLine,
+        { id: thinkingId, type: 'info', content: '  [ARC] ◌ Thinking...' },
+      ]);
+      setInput('');
+      setIsAIStreaming(true);
+
+      (async () => {
+        try {
+          let fullText = '';
+          let isFirst = true;
+
+          for await (const chunk of streamChatMessage(question)) {
+            if (isFirst) {
+              // Replace the "Thinking..." placeholder with first real content
+              setHistory(prev =>
+                prev.map(l =>
+                  l.id === thinkingId
+                    ? { ...l, id: responseId, type: 'output' as const, content: `  [ARC] ${chunk}` }
+                    : l
+                )
+              );
+              fullText = chunk;
+              isFirst = false;
+            } else {
+              fullText += chunk;
+              setHistory(prev =>
+                prev.map(l =>
+                  l.id === responseId
+                    ? { ...l, content: `  [ARC] ${fullText}` }
+                    : l
+                )
+              );
+            }
+          }
+
+          // If stream ended with no content at all
+          if (isFirst) {
+            setHistory(prev =>
+              prev.map(l =>
+                l.id === thinkingId
+                  ? { ...l, type: 'error' as const, content: '  [ARC] No response received. Please try again.' }
+                  : l
+              )
+            );
+          }
+        } catch (err: any) {
+          setHistory(prev =>
+            prev.map(l =>
+              l.id === thinkingId
+                ? { ...l, type: 'error' as const, content: `  [ARC] ✗ ${err?.message ?? 'Connection error'}` }
+                : l
+            )
+          );
+        } finally {
+          setIsAIStreaming(false);
+        }
+      })();
+      return;
+    }
+
+    if ((cmd === 'ask' || cmd === 'arc') && args.length === 0) {
+      responseLines = makeLines([
+        { type: 'info',   content: '  [ARC] Usage: ask <your question about Akash>' },
+        { type: 'output', content: '  Example: ask What projects has Akash built?' },
+      ]);
+    } else if (cmd === 'echo') {
       const text = raw.trim().slice(5).trim();
       responseLines = makeLines([{ type: 'output', content: `  ${text || ''}` }]);
     } else if (cmd === 'open' && args[0]) {
@@ -300,7 +380,7 @@ export default function CLITerminal({ isOpen, onClose }: CLITerminalProps) {
       setInput(next === -1 ? '' : cmdHistory[next]);
     } else if (e.key === 'Tab') {
       e.preventDefault();
-      const allCmds = [...Object.keys(COMMANDS), 'clear', 'open kairos', 'open nubesvault', 'open mario', 'echo'];
+      const allCmds = [...Object.keys(COMMANDS), 'clear', 'open kairos', 'open nubesvault', 'open mario', 'echo', 'ask', 'arc'];
       const match = allCmds.find(c => c.startsWith(input.toLowerCase()));
       if (match) setInput(match);
     } else if (e.key === 'l' && e.ctrlKey) {
@@ -422,14 +502,15 @@ export default function CLITerminal({ isOpen, onClose }: CLITerminalProps) {
               className="flex items-center gap-3 px-4 py-3 border-t shrink-0"
               style={{ borderColor: 'rgba(52,211,153,0.15)' }}
             >
-              <span className="text-emerald-500 text-sm select-none shrink-0">❯</span>
+              <span className={`text-sm select-none shrink-0 ${isAIStreaming ? 'text-cyan-400 animate-pulse' : 'text-emerald-500'}`}>❯</span>
               <input
                 ref={inputRef}
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="flex-1 bg-transparent text-emerald-100 text-sm outline-none caret-emerald-400 placeholder-neutral-700"
-                placeholder="type a command… (try 'help')"
+                disabled={isAIStreaming}
+                className="flex-1 bg-transparent text-emerald-100 text-sm outline-none caret-emerald-400 placeholder-neutral-700 disabled:opacity-50"
+                placeholder={isAIStreaming ? 'ARC is responding…' : "type a command… (try 'help' or 'ask')"}
                 spellCheck={false}
                 autoComplete="off"
                 autoCorrect="off"
@@ -442,6 +523,7 @@ export default function CLITerminal({ isOpen, onClose }: CLITerminalProps) {
               <span>↑↓ history</span>
               <span>Tab autocomplete</span>
               <span>Ctrl+L clear</span>
+              <span className="ml-auto text-cyan-900">ask &lt;question&gt; → ARC AI</span>
             </div>
           </motion.div>
         </>

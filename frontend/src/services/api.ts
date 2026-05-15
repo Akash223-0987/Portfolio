@@ -218,7 +218,7 @@ export async function sendChatMessage(message: string): Promise<{ response: stri
 }
 
 /**
- * Streams the AI response for maximum speed.
+ * Streams the AI response — parses proper SSE `data: {"text":"..."}` frames.
  */
 export async function* streamChatMessage(message: string): AsyncIterableIterator<string> {
   const res = await fetch(`${API_BASE}/ai/chat/stream`, {
@@ -236,10 +236,34 @@ export async function* streamChatMessage(message: string): AsyncIterableIterator
   if (!reader) throw new Error('Streaming not supported');
 
   const decoder = new TextDecoder();
+  let buffer = '';
+
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
-    yield decoder.decode(value, { stream: true });
+
+    buffer += decoder.decode(value, { stream: true });
+
+    // Process all complete SSE lines in the buffer
+    const lines = buffer.split('\n');
+    // Keep the last (potentially incomplete) line in buffer
+    buffer = lines.pop() ?? '';
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith('data:')) continue;
+
+      const dataStr = trimmed.slice('data:'.length).trim();
+      if (dataStr === '[DONE]') return;
+
+      try {
+        const parsed = JSON.parse(dataStr);
+        const text = parsed?.text ?? '';
+        if (text) yield text;
+      } catch {
+        // Not valid JSON — skip (could be an empty keep-alive line)
+      }
+    }
   }
 }
 
