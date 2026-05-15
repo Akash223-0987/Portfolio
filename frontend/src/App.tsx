@@ -50,7 +50,7 @@ function App() {
         />
       </div>
 
-      <Home onOpenAI={() => setIsAIModalOpen(true)} onOpenCLI={() => setIsCliOpen(true)} />
+      <Home onOpenAI={() => setIsAIModalOpen(true)} />
 
       {/* Floating Terminal Button */}
       <motion.button
