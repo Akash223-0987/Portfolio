@@ -12,7 +12,7 @@ const navLinks = [
   { name: 'Education', href: '#education', icon: <GraduationCap size={18} /> },
 ];
 
-export default function Navbar({ onOpenAI, onOpenCLI }: { onOpenAI: () => void; onOpenCLI: () => void }) {
+export default function Navbar({ onOpenAI }: { onOpenAI: () => void }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
