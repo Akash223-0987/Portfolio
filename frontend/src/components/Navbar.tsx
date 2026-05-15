@@ -12,7 +12,7 @@ const navLinks = [
   { name: 'Education', href: '#education', icon: <GraduationCap size={18} /> },
 ];
 
-export default function Navbar({ onOpenAI }: { onOpenAI: () => void }) {
+export default function Navbar({ onOpenAI, onOpenCLI }: { onOpenAI: () => void; onOpenCLI: () => void }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
@@ -139,8 +139,6 @@ export default function Navbar({ onOpenAI }: { onOpenAI: () => void }) {
             </div>
 
             <AskAIButton onClick={onOpenAI} />
-
-
 
             {/* Standalone Contact CTA — contextual hide when in contact section */}
             <AnimatePresence>

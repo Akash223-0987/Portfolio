@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import Home from './pages/Home';
 import { motion } from 'framer-motion';
+import { Terminal } from 'lucide-react';
 import { SparklesCore } from './components/ui/sparkles';
 import AskAIButton from './components/AskAIButton';
 import AskAIModal from './components/AskAIModal';
+import CLITerminal from './components/CLITerminal';
 
 function App() {
   const [isAIModalOpen, setIsAIModalOpen] = useState(false);
+  const [isCliOpen, setIsCliOpen] = useState(false);
 
   return (
     <div className="bg-black min-h-screen text-neutral-200 font-sans antialiased selection:bg-emerald-500/30 selection:text-emerald-200 relative overflow-hidden">
@@ -47,11 +50,38 @@ function App() {
         />
       </div>
 
-      <Home onOpenAI={() => setIsAIModalOpen(true)} />
+      <Home onOpenAI={() => setIsAIModalOpen(true)} onOpenCLI={() => setIsCliOpen(true)} />
 
-      {/* Global AI Floating interface (Mobile Only) */}
+      {/* Floating Terminal Button */}
+      <motion.button
+        onClick={() => setIsCliOpen(true)}
+        initial={{ opacity: 0, scale: 0.8, y: 20 }}
+        animate={{
+          opacity: 1,
+          scale: 1,
+          y: [0, -8, 0],
+        }}
+        transition={{
+          y: { duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 },
+          opacity: { duration: 0.5 },
+          scale: { duration: 0.5 },
+        }}
+        whileHover={{ scale: 1.1, y: -12 }}
+        whileTap={{ scale: 0.95 }}
+        title="Open Terminal"
+        className="fixed bottom-[5.5rem] right-6 md:bottom-24 md:right-8 z-50
+          flex items-center justify-center w-12 h-12 rounded-full
+          bg-neutral-900 text-emerald-400
+          shadow-[0_10px_40px_rgba(52,211,153,0.25)] border border-emerald-500/30
+          backdrop-blur-md pointer-events-auto"
+      >
+        <Terminal size={18} />
+      </motion.button>
+
+      {/* Global AI Floating interface */}
       <AskAIButton onClick={() => setIsAIModalOpen(true)} isFloating />
       <AskAIModal isOpen={isAIModalOpen} onClose={() => setIsAIModalOpen(false)} />
+      <CLITerminal isOpen={isCliOpen} onClose={() => setIsCliOpen(false)} />
     </div>
   );
 }

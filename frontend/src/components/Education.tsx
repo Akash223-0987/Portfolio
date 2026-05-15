@@ -99,45 +99,57 @@ export default function Education() {
                   </div>
                 </motion.div>
 
-                {/* Card */}
+                {/* Card — gradient border wrapper */}
                 <motion.div
                   initial={{ opacity: 0, x: -48, filter: 'blur(6px)' }}
                   whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
                   viewport={{ once: false, margin: '-60px' }}
                   transition={{ type: 'spring', stiffness: 80, damping: 18, delay }}
                   whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                  className="relative bg-neutral-900/60 backdrop-blur-md border border-white/8
-                    hover:border-emerald-500/40 rounded-2xl p-6 md:p-8
-                    shadow-xl shadow-black/30 group
-                    transition-colors duration-300 hover:bg-neutral-800/70"
+                  className="group rounded-2xl p-[1px] transition-all duration-500 shadow-xl shadow-black/30"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(52,211,153,0.12) 0%, rgba(255,255,255,0.04) 50%, rgba(52,211,153,0.04) 100%)',
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLElement).style.background = `linear-gradient(135deg, ${item.color}55 0%, ${item.color}22 40%, ${item.color}44 100%)`;
+                    (e.currentTarget as HTMLElement).style.boxShadow = `0 0 32px ${item.color}22, 0 20px 60px rgba(0,0,0,0.4)`;
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLElement).style.background = 'linear-gradient(135deg, rgba(52,211,153,0.12) 0%, rgba(255,255,255,0.04) 50%, rgba(52,211,153,0.04) 100%)';
+                    (e.currentTarget as HTMLElement).style.boxShadow = '';
+                  }}
                 >
-                  {/* Top accent line */}
-                  <div
-                    className="absolute top-0 left-0 right-0 h-[2px] rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    style={{ background: `linear-gradient(to right, ${item.color}, transparent)` }}
-                  />
+                  {/* Inner card */}
+                  <div className="relative overflow-hidden bg-neutral-950/80 backdrop-blur-md rounded-[15px] p-6 md:p-8">
 
-                  <div className="flex flex-col md:flex-row md:items-start justify-between gap-3 mb-3">
-                    <h3 className="text-xl md:text-2xl font-bold text-white leading-tight">{item.title}</h3>
-                    <span
-                      className="self-start text-xs font-bold px-3 py-1.5 rounded-full border whitespace-nowrap"
-                      style={{
-                        color: item.color,
-                        borderColor: item.color + '44',
-                        backgroundColor: item.color + '11',
-                      }}
-                    >
-                      {item.date}
-                    </span>
+                    {/* Subtle inner glow on top-left */}
+                    <div
+                      className="pointer-events-none absolute -top-10 -left-10 w-40 h-40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl"
+                      style={{ backgroundColor: item.color + '20' }}
+                    />
+
+                    <div className="flex flex-col md:flex-row md:items-start justify-between gap-3 mb-3">
+                      <h3 className="text-xl md:text-2xl font-bold text-white leading-tight">{item.title}</h3>
+                      <span
+                        className="self-start text-xs font-bold px-3 py-1.5 rounded-full border whitespace-nowrap"
+                        style={{
+                          color: item.color,
+                          borderColor: item.color + '55',
+                          backgroundColor: item.color + '18',
+                        }}
+                      >
+                        {item.date}
+                      </span>
+                    </div>
+
+                    <p className="text-sm font-semibold text-emerald-400/80 mb-3 border-b border-white/6 pb-3">
+                      {item.institution}
+                    </p>
+
+                    <p className="text-neutral-300 leading-relaxed text-sm md:text-base">
+                      {item.description}
+                    </p>
                   </div>
-
-                  <p className="text-sm font-semibold text-emerald-400/80 mb-3 border-b border-white/6 pb-3">
-                    {item.institution}
-                  </p>
-
-                  <p className="text-neutral-300 leading-relaxed text-sm md:text-base">
-                    {item.description}
-                  </p>
                 </motion.div>
 
               </div>

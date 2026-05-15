@@ -39,6 +39,7 @@ async def generate_ai_response_stream(user_message: str):
     """
 
     models_to_try = [
+        "arcee-ai/trinity-large-thinking:free",
         "poolside/laguna-xs.2:free",
         "minimax/minimax-m2.5:free",
         "deepseek/deepseek-chat:free",

@@ -7,11 +7,11 @@ import Education from '../components/Education';
 import Contact from '../components/Contact';
 import Footer from '../components/Footer';
 
-export default function Home({ onOpenAI }: { onOpenAI: () => void }) {
+export default function Home({ onOpenAI, onOpenCLI }: { onOpenAI: () => void; onOpenCLI: () => void }) {
   return (
     <>
       <div className="relative z-20">
-        <Navbar onOpenAI={onOpenAI} />
+        <Navbar onOpenAI={onOpenAI} onOpenCLI={onOpenCLI} />
         <main>
           <Hero />
           <About />
