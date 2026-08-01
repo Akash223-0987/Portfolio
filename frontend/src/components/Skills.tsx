@@ -38,10 +38,12 @@ const skillCategories = [
       { name: 'Express.js', logo: `${DEV}/express/express-original.svg`,        color: '#ffffff', dark: true },
       { name: 'MySQL',      logo: `${DEV}/mysql/mysql-original.svg`,            color: '#4479A1' },
       { name: 'MongoDB',    logo: `${DEV}/mongodb/mongodb-original.svg`,        color: '#47A248' },
+      { name: 'Redis',      logo: `${DEV}/redis/redis-original.svg`,            color: '#DC382D' },
       { name: 'PostgreSQL', logo: `${DEV}/postgresql/postgresql-original.svg`,  color: '#336791' },
       { name: 'Firebase',   logo: `${DEV}/firebase/firebase-original.svg`,      color: '#FFCA28' },
       { name: 'Supabase',   logo: `${DEV}/supabase/supabase-original.svg`,      color: '#3ECF8E' },
       { name: 'Google Cloud',logo: `${DEV}/googlecloud/googlecloud-original.svg`, color: '#4285F4' },
+      { name: 'AWS',        logo: `${DEV}/amazonwebservices/amazonwebservices-original-wordmark.svg`, color: '#FF9900', dark: true },
     ],
   },
   {

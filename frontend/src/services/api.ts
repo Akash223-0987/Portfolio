@@ -1,6 +1,6 @@
 // Central API service — all backend calls go through here.
 // Base URL comes from the Vite environment variable set in .env
-const API_BASE = import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000';
+export const API_BASE = import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 export interface ContactPayload {

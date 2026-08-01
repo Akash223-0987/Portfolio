@@ -25,7 +25,9 @@ export default function Contact() {
           user_email: formData.email,
           message: formData.message,
         },
-        import.meta.env.VITE_EMAIL_PUBLIC_KEY
+        {
+          publicKey: import.meta.env.VITE_EMAIL_PUBLIC_KEY,
+        }
       );
 
       // 2️⃣ Send auto reply to USER
@@ -37,7 +39,9 @@ export default function Contact() {
           user_email: formData.email,
           message: formData.message,
         },
-        import.meta.env.VITE_EMAIL_PUBLIC_KEY
+        {
+          publicKey: import.meta.env.VITE_EMAIL_PUBLIC_KEY,
+        }
       );
 
       setStatus('success');

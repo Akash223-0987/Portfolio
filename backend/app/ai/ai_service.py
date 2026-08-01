@@ -1,22 +1,23 @@
 import httpx
 import os
+import asyncio
+import json
 from app.database import database
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 async def generate_ai_response_stream(user_message: str):
-    # Fetch projects for context
-    projects = []
-    async for project in database["projects"].find():
-        projects.append(
-            f"{project['title']}: {project['description']} (Tech: {', '.join(project['techStack'])})"
-        )
+    # Concurrently fetch projects and resume details from MongoDB to optimize speed
+    projects_task = database["projects"].find().to_list(length=100)
+    resume_task = database["resume"].find_one({}, {"_id": 0})
+    
+    projects_data, resume_data = await asyncio.gather(projects_task, resume_task)
 
+    projects = [
+        f"{project['title']}: {project['description']} (Tech: {', '.join(project['techStack'])})"
+        for project in projects_data
+    ]
     project_context = "\n".join(projects)
-
-    # Fetch resume context
-    import json
-    resume_data = await database["resume"].find_one({}, {"_id": 0})
     resume_context = json.dumps(resume_data, indent=2) if resume_data else "Resume details not available."
 
     system_prompt = f"""
@@ -39,6 +40,8 @@ async def generate_ai_response_stream(user_message: str):
     """
 
     models_to_try = [
+        "google/gemma-4-26b-a4b-it:free",
+        "poolside/laguna-s-2.1:free",
         "arcee-ai/trinity-large-thinking:free",
         "poolside/laguna-xs.2:free",
         "minimax/minimax-m2.5:free",
@@ -47,7 +50,10 @@ async def generate_ai_response_stream(user_message: str):
         "meta-llama/llama-3.3-70b-instruct:free"
     ]
 
-    async with httpx.AsyncClient(timeout=60.0) as client:
+    # Use a shorter, custom timeout configuration to fail over quickly (e.g. 5-12s)
+    # instead of hanging for 60 seconds when a free OpenRouter model is rate-limited, overloaded, or down.
+    timeout_config = httpx.Timeout(timeout=12.0, connect=4.0, read=8.0)
+    async with httpx.AsyncClient(timeout=timeout_config) as client:
         for model in models_to_try:
             try:
                 print(f"Trying AI model: {model} with Reasoning Enabled")

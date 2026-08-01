@@ -1,6 +1,8 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Download, ArrowRight, Github, Linkedin, Mail, Instagram } from 'lucide-react';
 import { SiLeetcode } from 'react-icons/si';
+import { getResumeStatus, API_BASE } from '../services/api';
 
 const containerVariants = {
   hidden: {},
@@ -13,6 +15,21 @@ const letterVariants = {
 
 export default function Hero() {
   const nameLetters = 'D AKASH DORA'.split('');
+  const [resumeUrl, setResumeUrl] = useState('/D_AKASH_DORA_Resume.pdf');
+
+  useEffect(() => {
+    async function checkResume() {
+      try {
+        const status = await getResumeStatus();
+        if (status.exists) {
+          setResumeUrl(`${API_BASE}/resume/`);
+        }
+      } catch (err) {
+        console.error('Error fetching resume status:', err);
+      }
+    }
+    checkResume();
+  }, []);
 
   return (
     <section id="home" className="min-h-screen flex relative overflow-hidden items-center justify-center text-white pt-16 pb-10">
@@ -72,8 +89,9 @@ export default function Hero() {
                   <ArrowRight size={18} />
                 </button>
                 <a
-                  href="/D_AKASH_DORA_Resume.pdf"
-                  download
+                  href={resumeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-lg font-medium transition-all duration-300 backdrop-blur-md"
                 >
                   <Download size={18} />
